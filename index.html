@@ -1344,148 +1344,16 @@
   const wrapper = document.getElementById('map-wrapper');
   const canvas  = document.getElementById('map-canvas');
 
-  // Lock canvas to the LARGEST viewport ever seen (stored in localStorage).
-  // This means the calibration is always the full-screen state, so pin positions
-  // stay geographically correct even after a refresh in a smaller window.
-  const curW = wrapper.clientWidth;
-  const curH = wrapper.clientHeight;
-  let BASE_W = parseInt(localStorage.getItem('gfw_cal_w') || '0');
-  let BASE_H = parseInt(localStorage.getItem('gfw_cal_h') || '0');
-  if (curW * curH > BASE_W * BASE_H) {
-    BASE_W = curW;
-    BASE_H = curH;
-    try { localStorage.setItem('gfw_cal_w', BASE_W); localStorage.setItem('gfw_cal_h', BASE_H); } catch(e) {}
-  }
+  // Fixed canvas dimensions — identical in every browser, every session.
+  // Pin positions in HTML are calibrated to this exact size.
+  const BASE_W = 1440;
+  const BASE_H = 641;
   canvas.style.width      = BASE_W + 'px';
   canvas.style.height     = BASE_H + 'px';
   canvas.style.left       = '50%';
   canvas.style.top        = '50%';
   canvas.style.marginLeft = (-BASE_W / 2) + 'px';
   canvas.style.marginTop  = (-BASE_H / 2) + 'px';
-
-  // ---- OPTION 2: IMAGE-RELATIVE PIN POSITIONING ----
-  // Pin positions are stored as fractions of the 3840×2160 source image.
-  // On every load, they are converted to canvas % using the exact object-fit:cover
-  // crop for the current BASE_W × BASE_H, so pins are geographically correct
-  // regardless of viewport size or device — even on first visit.
-  const IMG_W = 3840, IMG_H = 2160, SVG_W = 1534, SVG_H = 678;
-
-  // Image-space fractions (derived from calibration viewport ~1440×798)
-  const IMG_COORDS = {
-    'madrid':     [0.34050, 0.34512],
-    'paris':      [0.35660, 0.27851],
-    'bangkok':    [0.62810, 0.52788],
-    'phnompenh':  [0.64130, 0.54492],
-    'jakarta':    [0.64760, 0.65352],
-    'pylos':      [0.40540, 0.36838],
-    'marmenor':   [0.34610, 0.36365],
-    'santiago':   [0.15490, 0.83306],
-    'hasselt':    [0.36640, 0.24749],
-    'casablanca': [0.33150, 0.39468],
-    '2030':       [0.53310, 0.62236],
-    'thai':       [0.62100, 0.52168],
-    'indonesia':  [0.66520, 0.54492],
-    'sandmining': [0.63920, 0.55113],
-  };
-
-  // Career line Bezier control-point offsets from midpoint (as fraction of SVG viewBox)
-  // Format: [fromKey, toKey, [ox_frac, oy_frac]]
-  const CLINES = [
-    ['madrid', 'paris',      [-0.00880,  0.00369]],
-    ['madrid', 'hasselt',    [-0.00913,  0.00811]],
-    ['madrid', 'casablanca', [-0.00685,  0.00369]],
-    ['madrid', 'bangkok',    [-0.000326,-0.21388]],
-    ['madrid', 'phnompenh',  [ 0.001304,-0.21830]],
-    ['madrid', 'jakarta',    [ 0.002608,-0.22640]],
-    ['madrid', 'santiago',   [-0.03261,  0.02212]],
-  ];
-
-  // Returns object-fit:cover crop parameters for canvas size cW × cH
-  function getCrop(cW, cH) {
-    const r = cW / cH, ir = IMG_W / IMG_H;
-    return r >= ir
-      ? { dW: cW,      dH: cW / ir,  cX: 0,                cY: (cW / ir - cH) / 2 }
-      : { dW: cH * ir, dH: cH,       cX: (cH * ir - cW) / 2, cY: 0                };
-  }
-
-  // Converts image-space fractions (ix, iy) → canvas percentage for canvas cW × cH
-  function imgToCanvas(ix, iy, cW, cH) {
-    const { dW, dH, cX, cY } = getCrop(cW, cH);
-    return [(ix * dW - cX) / cW * 100, (iy * dH - cY) / cH * 100];
-  }
-
-  // Returns the pin DOM element for a given key
-  function pinEl(key) {
-    return canvas.querySelector('[data-pin-key="' + key + '"]');
-  }
-
-  // Update SVG career line paths based on current pin positions
-  function updateCareerLines() {
-    const svg = canvas.querySelector('svg');
-    if (!svg) return;
-    const paths = [...svg.querySelectorAll('path.career-line')];
-    CLINES.forEach(([fromKey, toKey, [ox, oy]], i) => {
-      const a = pinEl(fromKey), b = pinEl(toKey);
-      if (!a || !b || !paths[i]) return;
-      const x1 = parseFloat(a.style.left)  / 100 * SVG_W;
-      const y1 = parseFloat(a.style.top)   / 100 * SVG_H;
-      const x2 = parseFloat(b.style.left)  / 100 * SVG_W;
-      const y2 = parseFloat(b.style.top)   / 100 * SVG_H;
-      const cx = (x1 + x2) / 2 + ox * SVG_W;
-      const cy = (y1 + y2) / 2 + oy * SVG_H;
-      paths[i].setAttribute('d',
-        `M ${x1.toFixed(1)},${y1.toFixed(1)} Q ${cx.toFixed(1)},${cy.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`
-      );
-    });
-  }
-
-  // Reposition all pins using image-relative coordinates for the current crop.
-  // Self-calibrating: when running at the calibration (largest-ever) viewport,
-  // it derives and stores precise image coordinates from the HTML pin positions.
-  // When running at a smaller viewport, it uses those stored coordinates.
-  function repositionAllPins() {
-    const isCalViewport = (BASE_W === curW && BASE_H === curH);
-
-    if (isCalViewport) {
-      // Current viewport IS the calibration — HTML pin positions are geographically correct.
-      // Derive image-space coordinates from them and store for use by smaller viewports.
-      const crop = getCrop(BASE_W, BASE_H);
-      const derived = {};
-      Object.keys(IMG_COORDS).forEach(key => {
-        const el = pinEl(key);
-        if (!el) return;
-        const px = parseFloat(el.style.left) / 100;
-        const py = parseFloat(el.style.top)  / 100;
-        derived[key] = [
-          (px * BASE_W + crop.cX) / crop.dW,
-          (py * BASE_H + crop.cY) / crop.dH
-        ];
-      });
-      try { localStorage.setItem('gfw_img_coords', JSON.stringify(derived)); } catch(e) {}
-      // HTML positions already correct — just sync the SVG career lines
-      updateCareerLines();
-      return;
-    }
-
-    // Smaller viewport: reposition pins using precise stored coords (or hardcoded fallback)
-    let coords = IMG_COORDS;
-    try {
-      const stored = localStorage.getItem('gfw_img_coords');
-      if (stored) coords = JSON.parse(stored);
-    } catch(e) {}
-
-    Object.entries(coords).forEach(([key, [ix, iy]]) => {
-      const el = pinEl(key);
-      if (!el) return;
-      const [px, py] = imgToCanvas(ix, iy, BASE_W, BASE_H);
-      el.style.left = px.toFixed(4) + '%';
-      el.style.top  = py.toFixed(4) + '%';
-    });
-    updateCareerLines();
-  }
-
-  // Apply on load
-  repositionAllPins();
 
   function getBaseScale() {
     // Scale factor to make the fixed canvas cover (fill) the current viewport.
