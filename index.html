@@ -201,6 +201,7 @@
     border-radius: 50%;
     border: 1.5px solid rgba(255, 209, 102, 0.6);
     animation: ripple 2.5s infinite;
+    pointer-events: none;
   }
 
   .point-ripple-2 {
@@ -218,6 +219,15 @@
     background: var(--glow-cyan);
     box-shadow: 0 0 16px var(--glow-cyan), 0 0 32px rgba(0, 212, 255, 0.5);
     width: 11px; height: 11px;
+    border-color: var(--glow-cyan);
+  }
+
+  /* Hollow cyan variant used by story pins (Pylos, Mar Menor) */
+  .point-core-story {
+    background: var(--ocean-deep);
+    width: 10px; height: 10px;
+    border: 2.5px solid #00d4ff;
+    box-shadow: 0 0 10px #00d4ff, 0 0 22px rgba(0,212,255,0.45);
   }
 
   /* Point label */
@@ -998,7 +1008,7 @@
   <!-- CAREER LOCATION POINTS -->
 
   <!-- Madrid -->
-  <div class="career-point" data-pin-key="madrid" style="left: 34.05%; top: 34.28%;"
+  <div class="career-point" data-pin-key="madrid" style="left: 34.05%; top: 34.28%; z-index: 25;"
        data-city="Madrid" data-years="2020–present"
        data-desc="Communication Consultant. Translating complex environmental and technical topics into compelling global narratives. Experienced in technical storytelling, multimedia production and cross-cultural communications for international media, NGOs, multilateral institutions and multinationals."
        data-links="General portfolio|https://ricardoperezsolero.com/"
@@ -1020,8 +1030,8 @@
        data-desc="Dart Center Fellowship, Columbia University: Trauma-informed storytelling on childhood forced migration in Europe."
        data-tags="Education|Columbia|Journalism|Fellowship">
     <div class="point-ring">
-      <div class="point-core" style="background: var(--glow-yellow); box-shadow: 0 0 12px var(--glow-yellow);"></div>
-      <div class="point-ripple" style="border-color: rgba(255,209,102,0.6);"></div>
+      <div class="point-core"></div>
+      <div class="point-ripple"></div>
     </div>
     <div class="point-label">
       <span class="point-city">Paris</span>
@@ -1116,7 +1126,7 @@
        data-image="Pylos.webp"
        data-links="El laberinto de los cuerpos|https://www.revista5w.com/temas/migraciones/el-laberinto-de-los-cuerpos-133780">
     <div class="point-ring">
-      <div class="point-core" style="background: var(--ocean-deep); width:10px; height:10px; border: 2.5px solid #00d4ff; box-shadow: 0 0 10px #00d4ff, 0 0 22px rgba(0,212,255,0.45);"></div>
+      <div class="point-core point-core-story"></div>
       <div class="point-ripple" style="border-color: rgba(0,212,255,0.5);"></div>
       <div class="point-ripple point-ripple-2" style="border-color: rgba(0,212,255,0.25);"></div>
     </div>
@@ -1134,7 +1144,7 @@
        data-image="mar-menor.webp"
        data-links="The Guardian · Legal Personhood|https://www.theguardian.com/environment/2020/nov/18/can-spain-fix-its-worst-ecological-disaster-by-making-a-lagoon-a-legal-person|UNEP · Restoration Video|https://youtu.be/oUM7_h1_DjI">
     <div class="point-ring">
-      <div class="point-core" style="background: var(--ocean-deep); width:10px; height:10px; border: 2.5px solid #00d4ff; box-shadow: 0 0 10px #00d4ff, 0 0 22px rgba(0,212,255,0.45);"></div>
+      <div class="point-core point-core-story"></div>
       <div class="point-ripple" style="border-color: rgba(0,212,255,0.5);"></div>
       <div class="point-ripple point-ripple-2" style="border-color: rgba(0,212,255,0.25);"></div>
     </div>
