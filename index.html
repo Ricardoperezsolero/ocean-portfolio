@@ -1001,7 +1001,8 @@
   <div class="career-point" data-pin-key="madrid" style="left: 34.05%; top: 34.28%;"
        data-city="Madrid" data-years="2020–present"
        data-desc="Communication Consultant. Translating complex environmental and technical topics into compelling global narratives. Experienced in technical storytelling, multimedia production and cross-cultural communications for international media, NGOs, multilateral institutions and multinationals."
-       data-tags="Lived here|Journalism|Communication|Environment">
+       data-links="General portfolio|https://ricardoperezsolero.com/"
+       data-tags="Lived here|Journalism|Communication|Environment|Portfolio">
     <div class="point-ring">
       <div class="point-core"></div>
       <div class="point-ripple"></div>
@@ -1403,6 +1404,9 @@
   }
 
   window.addEventListener('resize', () => applyTransform(false));
+
+  // Apply correct scale on initial paint (after layout is settled)
+  requestAnimationFrame(() => requestAnimationFrame(() => applyTransform(false)));
 
   // Zoom buttons
   document.getElementById('zoom-in').addEventListener('click', () => {
