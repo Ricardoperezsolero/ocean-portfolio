@@ -230,6 +230,18 @@
     box-shadow: 0 0 10px #00d4ff, 0 0 22px rgba(0,212,255,0.45);
   }
 
+  /* Full solid blue on hover for story pins (overrides hollow style) */
+  .career-point:hover .point-core-story {
+    background: var(--glow-cyan);
+    border-color: var(--glow-cyan);
+  }
+
+  /* Smaller click/hover ring for densely-packed pins (Madrid, Mar Menor) */
+  .point-ring--sm {
+    width: 14px;
+    height: 14px;
+  }
+
   /* Point label */
   .point-label {
     position: absolute;
@@ -351,6 +363,7 @@
     color: var(--text-primary);
     line-height: 1.6;
     margin-bottom: 8px;
+    white-space: pre-line;
   }
 
   .tooltip-tag {
@@ -713,7 +726,7 @@
     position: absolute;
     transform: translate(-50%, -50%);
     z-index: 10;
-    pointer-events: none;
+    cursor: pointer;
   }
 
   .milestone-ring {
@@ -1008,12 +1021,12 @@
   <!-- CAREER LOCATION POINTS -->
 
   <!-- Madrid -->
-  <div class="career-point" data-pin-key="madrid" style="left: 34.05%; top: 34.28%; z-index: 25;"
+  <div class="career-point" data-pin-key="madrid" style="left: 34.05%; top: 34.28%; z-index: 30;"
        data-city="Madrid" data-years="2020–present"
        data-desc="Communication Consultant. Translating complex environmental and technical topics into compelling global narratives. Experienced in technical storytelling, multimedia production and cross-cultural communications for international media, NGOs, multilateral institutions and multinationals."
        data-links="General portfolio|https://ricardoperezsolero.com/"
        data-tags="Lived here|Journalism|Communication|Environment|Portfolio">
-    <div class="point-ring">
+    <div class="point-ring point-ring--sm">
       <div class="point-core"></div>
       <div class="point-ripple"></div>
       <div class="point-ripple point-ripple-2"></div>
@@ -1025,7 +1038,7 @@
   </div>
 
   <!-- Paris -->
-  <div class="career-point" data-pin-key="paris" style="left: 35.66%; top: 27.52%;"
+  <div class="career-point" data-pin-key="paris" style="left: 35.66%; top: 27.52%; z-index: 22;"
        data-city="Paris" data-years="2025"
        data-desc="Dart Center Fellowship, Columbia University: Trauma-informed storytelling on childhood forced migration in Europe."
        data-tags="Education|Columbia|Journalism|Fellowship">
@@ -1108,14 +1121,19 @@
 
 
   <!-- 2030 markers -->
-  <div class="milestone" data-pin-key="2030" data-tags="Communication|Journalism|Mediterranean|SEA|Migration|Education" style="left: 53.31%; top: 62.42%;">
+  <div class="milestone" data-pin-key="2030"
+       data-city="GFW 2030 Strategy & Goals" data-years="2030"
+       data-desc="Global Fishing Watch aims to map all human activity at sea and engage 30 selected countries to adopt transparency as a principle and share ocean data by 2030, helping fight illegal fishing, protect small-scale fishers and support marine protected areas worldwide."
+       data-tags="GFW"
+       data-links="GFW Strategic Plan 2030 (PDF)|https://globalfishingwatch.org/wp-content/uploads/strategic_plan_2030_web.pdf"
+       style="left: 53.31%; top: 62.42%;">
     <div class="milestone-wave"></div>
     <div class="milestone-wave"></div>
     <div class="milestone-wave"></div>
     <div class="milestone-ring">
       <div class="milestone-core"></div>
     </div>
-    <div class="milestone-label"><span style="color: var(--glow-cyan); font-size:8px; font-weight:700; display:block; margin-bottom:2px;">2030 Goals</span>Map all human activity · 30 countries<br>Promote transparency</div>
+    <div class="milestone-label"><span style="color: var(--glow-cyan); font-size:8px; font-weight:700; display:block; margin-bottom:2px;">GFW 2030</span>Map all human activity · 30 countries<br>Promote transparency</div>
   </div>
 
   <!-- Pylos, Greece -->
@@ -1143,7 +1161,7 @@
        data-tags="Portfolio|Journalism|Mediterranean|Legal Personhood|Ocean Law"
        data-image="mar-menor.webp"
        data-links="The Guardian · Legal Personhood|https://www.theguardian.com/environment/2020/nov/18/can-spain-fix-its-worst-ecological-disaster-by-making-a-lagoon-a-legal-person|UNEP · Restoration Video|https://youtu.be/oUM7_h1_DjI">
-    <div class="point-ring">
+    <div class="point-ring point-ring--sm">
       <div class="point-core point-core-story"></div>
       <div class="point-ripple" style="border-color: rgba(0,212,255,0.5);"></div>
       <div class="point-ripple point-ripple-2" style="border-color: rgba(0,212,255,0.25);"></div>
@@ -1287,7 +1305,7 @@
 <script>
   // ---- TOOLTIP ----
   const tooltip = document.getElementById('tooltip');
-  const points = document.querySelectorAll('.career-point');
+  const points = document.querySelectorAll('.career-point, .milestone');
   let hideTimer = null;
 
   function populateTooltip(point) {
@@ -1415,8 +1433,10 @@
 
   window.addEventListener('resize', () => applyTransform(false));
 
-  // Apply correct scale on initial paint (after layout is settled)
-  requestAnimationFrame(() => requestAnimationFrame(() => applyTransform(false)));
+  // Apply correct scale on initial paint — immediate call covers most browsers,
+  // the rAF pass corrects any edge-case where layout isn't fully settled yet.
+  applyTransform(false);
+  requestAnimationFrame(() => applyTransform(false));
 
   // Zoom buttons
   document.getElementById('zoom-in').addEventListener('click', () => {
@@ -1500,7 +1520,7 @@
   // ---- TAG FILTER BAR ----
   (function() {
     const allPoints = document.querySelectorAll('.career-point, .story-pin, .milestone');
-    const allowedTags = ['Portfolio', 'Communication', 'Journalism', 'Mediterranean', 'SEA', 'Migration', 'Education', 'Lived here'];
+    const allowedTags = ['Portfolio', 'GFW', 'Communication', 'Journalism', 'Mediterranean', 'SEA', 'Migration', 'Education', 'Lived here'];
 
     const filterBar = document.getElementById('filter-bar');
     const trackLayer = document.getElementById('career-lines-svg');
