@@ -924,8 +924,15 @@
   /* Phone landscape → scale each element individually, map fills viewport naturally */
   @media (pointer: coarse) and (max-height: 499px) and (orientation: landscape) {
 
+    /* Header: one line */
+    header           { height: 40px; padding: 6px 10px; }
+    .header-logo     { font-size: 7px; gap: 6px; white-space: nowrap; }
+    .logo-dot        { width: 6px; height: 6px; }
+    .header-title    { font-size: 6px; white-space: nowrap; }
+    .header-tag      { font-size: 6px; padding: 2px 6px; white-space: nowrap; }
+
     /* Info panel: compact collapsible sidebar */
-    .info-panel         { width: 148px; top: 50px; left: 10px; padding: 0; overflow: hidden; }
+    .info-panel         { width: 148px; top: 44px; left: 10px; padding: 0; overflow: hidden; }
     .panel-toggle-bar   { display: flex !important; }
     .panel-body         { padding: 8px 10px; }
     .info-panel.collapsed .panel-body { display: none; }
@@ -955,7 +962,7 @@
     .milestone-label { font-size: 6px; line-height: 1.3; }
 
     /* Filter tags — pushed below wrapped header */
-    #filter-bar  { gap: 3px; max-width: 260px; top: 70px; }
+    #filter-bar  { gap: 3px; max-width: 260px; top: 50px; }
     .filter-tag  { font-size: 6px; padding: 2px 6px; }
 
     /* Tooltip: compact, scrollable so links are never cut off */
@@ -1119,7 +1126,7 @@
 <!-- MAP -->
 <div class="map-wrapper" id="map-wrapper">
   <div class="map-canvas" id="map-canvas">
-  <img class="map-bg-image" src="gfw-map.webp" alt="Global Fishing Watch map">
+  <img class="map-bg-image" src="gfw-map.jpg" alt="Global Fishing Watch map">
   <div class="map-bg"></div>
   <div class="grid-overlay"></div>
 
@@ -1163,7 +1170,7 @@
        data-desc="Communication Consultant. Translating complex environmental and technical topics into compelling global narratives. Experienced in technical storytelling, multimedia production and cross-cultural communications for international media, NGOs, multilateral institutions and multinationals."
        data-links="General portfolio|https://ricardoperezsolero.com/"
        data-tags="Lived here|Journalism|Communication|Environment|Portfolio"
-       data-image="portrait.webp"
+       data-image="portrait.jpg"
        data-image-position="center 30%">
     <div class="point-ring point-ring--sm">
       <div class="point-core"></div>
@@ -1280,7 +1287,7 @@
        data-city="Pylos, Greece" data-years="2025"
        data-desc="Covered the aftermath of the 2023 Pylos shipwreck as part of a three-part cross-border investigation by 5W and Baynana into European forensic protocols for migrants who died in the Mediterranean and the challenges families face in identifying them."
        data-tags="Portfolio|Journalism|Migration|Mediterranean"
-       data-image="Pylos.webp"
+       data-image="Pylos.jpg"
        data-links="El laberinto de los cuerpos|https://www.revista5w.com/temas/migraciones/el-laberinto-de-los-cuerpos-133780">
     <div class="point-ring">
       <div class="point-core point-core-story"></div>
@@ -1298,7 +1305,7 @@
        data-city="Mar Menor, Spain" data-years="2021–2025"
        data-desc="Covered Mar Menor being granted legal personhood status for The Guardian, a landmark environmental law story. Also reported on UNEP-led restoration efforts of Spain's largest saltwater lagoon, threatened by agricultural runoff and overdevelopment."
        data-tags="Portfolio|Journalism|Mediterranean|Legal Personhood|Ocean Law"
-       data-image="mar-menor.webp"
+       data-image="mar-menor.jpg"
        data-links="The Guardian · Legal Personhood|https://www.theguardian.com/environment/2020/nov/18/can-spain-fix-its-worst-ecological-disaster-by-making-a-lagoon-a-legal-person|UNEP · Restoration Video|https://youtu.be/oUM7_h1_DjI">
     <div class="point-ring point-ring--sm">
       <div class="point-core point-core-story"></div>
@@ -1507,20 +1514,30 @@
   }
 
   function anchorTooltip(point) {
-    const rect = point.getBoundingClientRect();
     requestAnimationFrame(() => {
       const tw = tooltip.offsetWidth;
       const th = tooltip.offsetHeight;
       const margin = 14;
-      const leftBound = 10;
-      const rightBound = window.innerWidth - 10;
-      let left = rect.right + margin;
-      let top = rect.top + (rect.height / 2) - (th / 2);
-      if (left + tw > rightBound) left = rect.left - tw - margin;
-      left = Math.max(leftBound, Math.min(left, rightBound - tw));
-      top = Math.max(60, Math.min(top, window.innerHeight - th - 10));
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // Calculate screen position from canvas transform to avoid getBoundingClientRect
+      // unreliability on transformed containers in mobile browsers
+      const cx = (parseFloat(point.style.left) / 100) * BASE_W;
+      const cy = (parseFloat(point.style.top) / 100) * BASE_H;
+      const s  = getBaseScale() * zoom;
+      const ww = wrapper.clientWidth;
+      const wh = wrapper.clientHeight;
+      const screenX = (cx + panX - BASE_W / 2) * s + ww / 2;
+      const screenY = (cy + panY - BASE_H / 2) * s + wh / 2;
+
+      let left = screenX + margin;
+      let top  = screenY - th / 2;
+      if (left + tw > vw - 10) left = screenX - tw - margin;
+      left = Math.max(10, Math.min(left, vw - tw - 10));
+      top  = Math.max(60, Math.min(top, vh - th - 10));
       tooltip.style.left = left + 'px';
-      tooltip.style.top = top + 'px';
+      tooltip.style.top  = top  + 'px';
     });
   }
 
