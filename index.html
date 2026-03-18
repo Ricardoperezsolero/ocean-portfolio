@@ -855,6 +855,7 @@
     border-top: none;
   }
 
+  /* ── Responsive notices ───────────────────────────── */
   .mobile-notice {
     display: none;
     position: fixed;
@@ -897,8 +898,28 @@
     border: 1px solid rgba(0,212,255,0.15);
     padding: 20px;
   }
-  @media (max-width: 1250px) {
-    .mobile-notice { display: flex; }
+  .notice-icon {
+    font-size: 40px;
+    margin-bottom: 24px;
+    opacity: 0.7;
+  }
+
+  /* Phone portrait only */
+  @media (max-width: 767px) and (orientation: portrait) {
+    #notice-phone { display: flex; }
+  }
+
+  /* Phone landscape → map shows through (no notice) */
+
+  /* Tablet portrait – rotate prompt */
+  @media (min-width: 768px) and (max-width: 1249px) and (orientation: portrait) {
+    #notice-rotate { display: flex; }
+  }
+
+  /* Tablet landscape or small desktop window – fullscreen prompt
+     min-height: 500px excludes phone landscape (phones ~375–430px tall) */
+  @media (min-width: 768px) and (max-width: 1249px) and (orientation: landscape) and (min-height: 500px) {
+    #notice-fullscreen { display: flex; }
   }
 
   @media (max-width: 1300px) {
@@ -960,12 +981,33 @@
 <body>
 
 <!-- MOBILE FALLBACK -->
-<div class="mobile-notice">
+<!-- Phone notice -->
+<div class="mobile-notice" id="notice-phone">
   <div class="mobile-inner">
-    <div class="logo-dot" style="width:10px;height:10px;margin-bottom:16px;"></div>
+    <div class="notice-icon">🖥️</div>
     <div class="mobile-title">My Ocean Story</div>
     <div class="mobile-sub">Ricardo Perez-Solero × Global Fishing Watch</div>
-    <div class="mobile-msg">Best viewed in full screen<br />on a laptop or desktop.</div>
+    <div class="mobile-msg">Best viewed on a desktop, laptop or tablet.</div>
+  </div>
+</div>
+
+<!-- Tablet portrait – rotate notice -->
+<div class="mobile-notice" id="notice-rotate">
+  <div class="mobile-inner">
+    <div class="notice-icon">↻</div>
+    <div class="mobile-title">Rotate your device</div>
+    <div class="mobile-sub">Ricardo Perez-Solero × Global Fishing Watch</div>
+    <div class="mobile-msg">This map works best in landscape mode.<br />Turn your device horizontally to explore.</div>
+  </div>
+</div>
+
+<!-- Small window / tablet landscape notice -->
+<div class="mobile-notice" id="notice-fullscreen">
+  <div class="mobile-inner">
+    <div class="notice-icon">⛶</div>
+    <div class="mobile-title">My Ocean Story</div>
+    <div class="mobile-sub">Ricardo Perez-Solero × Global Fishing Watch</div>
+    <div class="mobile-msg">Best viewed in full screen.<br />Expand your browser window for the full experience.</div>
   </div>
 </div>
 
