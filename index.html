@@ -923,6 +923,22 @@
   /* Phone landscape → scale everything down to fit, user can pinch-zoom */
   @media (max-height: 499px) and (orientation: landscape) {
     body { zoom: 0.45; }
+
+    /* Pin point text: half size */
+    .point-city { font-size: 5px; letter-spacing: 0.06em; }
+    .point-role  { font-size: 4px; }
+
+    /* Filter tags: 30% smaller */
+    #filter-bar  { gap: 3px; max-width: 300px; }
+    .filter-tag  { font-size: 6px; padding: 3px 7px; }
+
+    /* Tooltip: wider to compensate for zoom */
+    .tooltip     { max-width: 380px; min-width: 300px; }
+  }
+
+  /* Hide zoom controls on touch devices — pinch-to-zoom handles it */
+  @media (pointer: coarse) {
+    .zoom-controls { display: none; }
   }
 
   /* Tablet portrait – rotate prompt */
