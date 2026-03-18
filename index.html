@@ -1015,10 +1015,7 @@
     #notice-rotate { display: flex; }
   }
 
-  /* Tablet landscape (touch) → fullscreen notice */
-  @media (pointer: coarse) and (min-width: 768px) and (orientation: landscape) and (min-height: 500px) {
-    #notice-fullscreen { display: flex; }
-  }
+  /* Tablet landscape (touch) → show full map, no notice */
 
   @media (max-width: 1300px) {
     .info-panel {
@@ -1082,6 +1079,7 @@
 <!-- Phone notice -->
 <div class="mobile-notice" id="notice-phone">
   <div class="mobile-inner">
+    <div class="notice-icon">↻</div>
     <div class="notice-icon">🖥️</div>
     <div class="mobile-title">My Ocean Story</div>
     <div class="mobile-sub">Ricardo Perez-Solero × Global Fishing Watch</div>
