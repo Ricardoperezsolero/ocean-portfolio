@@ -909,7 +909,10 @@
     #notice-phone { display: flex; }
   }
 
-  /* Phone landscape → map shows through (no notice) */
+  /* Phone landscape → scale everything down to fit, user can pinch-zoom */
+  @media (max-height: 499px) and (orientation: landscape) {
+    body { zoom: 0.45; }
+  }
 
   /* Tablet portrait – rotate prompt */
   @media (min-width: 768px) and (max-width: 1249px) and (orientation: portrait) {
