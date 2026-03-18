@@ -1030,7 +1030,8 @@
        data-desc="Communication Consultant. Translating complex environmental and technical topics into compelling global narratives. Experienced in technical storytelling, multimedia production and cross-cultural communications for international media, NGOs, multilateral institutions and multinationals."
        data-links="General portfolio|https://ricardoperezsolero.com/"
        data-tags="Lived here|Journalism|Communication|Environment|Portfolio"
-       data-image="portrait.webp">
+       data-image="portrait.webp"
+       data-image-position="center 30%">
     <div class="point-ring point-ring--sm">
       <div class="point-core"></div>
       <div class="point-ripple"></div>
@@ -1321,9 +1322,11 @@
     if (point.dataset.image) {
       imgEl.src = point.dataset.image;
       imgEl.alt = point.dataset.city;
+      imgEl.style.objectPosition = point.dataset.imagePosition || 'center';
       imgEl.classList.add('has-image');
     } else {
       imgEl.src = '';
+      imgEl.style.objectPosition = 'center';
       imgEl.classList.remove('has-image');
     }
 
