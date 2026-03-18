@@ -817,6 +817,37 @@
 
   #tt-links { margin-top: 4px; }
 
+  /* Close button — hidden on desktop, shown on touch */
+  .tooltip-close {
+    display: none;
+    position: absolute;
+    top: 6px; right: 6px;
+    z-index: 10;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--glow-cyan);
+    font-size: 11px;
+    width: 22px; height: 22px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+  }
+
+  /* Touch devices: show close button, centre tooltip, make scrollable */
+  @media (pointer: coarse) {
+    .tooltip-close { display: flex; }
+    .tooltip {
+      position: fixed;
+      max-width: 80vw;
+      min-width: 260px;
+      max-height: 70vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
   /* ---- ZOOM CONTROLS ---- */
   .zoom-controls {
     position: fixed;
@@ -962,7 +993,7 @@
     .milestone-label { font-size: 6px; line-height: 1.3; }
 
     /* Filter tags — pushed below wrapped header */
-    #filter-bar  { gap: 3px; max-width: 260px; top: 50px; }
+    #filter-bar  { gap: 3px; max-width: 260px; top: 65px; }
     .filter-tag  { font-size: 6px; padding: 2px 6px; }
 
     /* Tooltip: compact, scrollable so links are never cut off */
@@ -1124,7 +1155,7 @@
 <!-- MAP -->
 <div class="map-wrapper" id="map-wrapper">
   <div class="map-canvas" id="map-canvas">
-  <img class="map-bg-image" src="gfw-map.jpg" alt="Global Fishing Watch map">
+  <img class="map-bg-image" src="gfw-map.webp" alt="Global Fishing Watch map">
   <div class="map-bg"></div>
   <div class="grid-overlay"></div>
 
@@ -1168,7 +1199,7 @@
        data-desc="Communication Consultant. Translating complex environmental and technical topics into compelling global narratives. Experienced in technical storytelling, multimedia production and cross-cultural communications for international media, NGOs, multilateral institutions and multinationals."
        data-links="General portfolio|https://ricardoperezsolero.com/"
        data-tags="Lived here|Journalism|Communication|Environment|Portfolio"
-       data-image="portrait.jpg"
+       data-image="portrait.webp"
        data-image-position="center 30%">
     <div class="point-ring point-ring--sm">
       <div class="point-core"></div>
@@ -1285,7 +1316,7 @@
        data-city="Pylos, Greece" data-years="2025"
        data-desc="Covered the aftermath of the 2023 Pylos shipwreck as part of a three-part cross-border investigation by 5W and Baynana into European forensic protocols for migrants who died in the Mediterranean and the challenges families face in identifying them."
        data-tags="Portfolio|Journalism|Migration|Mediterranean"
-       data-image="Pylos.jpg"
+       data-image="Pylos.webp"
        data-links="El laberinto de los cuerpos|https://www.revista5w.com/temas/migraciones/el-laberinto-de-los-cuerpos-133780">
     <div class="point-ring">
       <div class="point-core point-core-story"></div>
@@ -1303,7 +1334,7 @@
        data-city="Mar Menor, Spain" data-years="2021–2025"
        data-desc="Covered Mar Menor being granted legal personhood status for The Guardian, a landmark environmental law story. Also reported on UNEP-led restoration efforts of Spain's largest saltwater lagoon, threatened by agricultural runoff and overdevelopment."
        data-tags="Portfolio|Journalism|Mediterranean|Legal Personhood|Ocean Law"
-       data-image="mar-menor.jpg"
+       data-image="mar-menor.webp"
        data-links="The Guardian · Legal Personhood|https://www.theguardian.com/environment/2020/nov/18/can-spain-fix-its-worst-ecological-disaster-by-making-a-lagoon-a-legal-person|UNEP · Restoration Video|https://youtu.be/oUM7_h1_DjI">
     <div class="point-ring point-ring--sm">
       <div class="point-core point-core-story"></div>
@@ -1439,6 +1470,7 @@
 
 <!-- TOOLTIP -->
 <div class="tooltip" id="tooltip">
+  <button class="tooltip-close" id="tt-close" aria-label="Close">✕</button>
   <div class="tooltip-inner">
     <div class="tooltip-city" id="tt-city"></div>
     <div class="tooltip-years" id="tt-years"></div>
@@ -1511,32 +1543,42 @@
     }
   }
 
+  const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
   function anchorTooltip(point) {
     requestAnimationFrame(() => {
       const tw = tooltip.offsetWidth;
       const th = tooltip.offsetHeight;
-      const margin = 14;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
 
-      // Calculate screen position from canvas transform to avoid getBoundingClientRect
-      // unreliability on transformed containers in mobile browsers
-      const cx = (parseFloat(point.style.left) / 100) * BASE_W;
-      const cy = (parseFloat(point.style.top) / 100) * BASE_H;
-      const s  = getBaseScale() * zoom;
-      const ww = wrapper.clientWidth;
-      const wh = wrapper.clientHeight;
-      const screenX = (cx + panX - BASE_W / 2) * s + ww / 2;
-      const screenY = (cy + panY - BASE_H / 2) * s + wh / 2;
-
-      let left = screenX + margin;
-      let top  = screenY - th / 2;
-      if (left + tw > vw - 10) left = screenX - tw - margin;
-      left = Math.max(10, Math.min(left, vw - tw - 10));
-      top  = Math.max(60, Math.min(top, vh - th - 10));
-      tooltip.style.left = left + 'px';
-      tooltip.style.top  = top  + 'px';
+      if (isTouch) {
+        // Centre on screen for touch devices
+        tooltip.style.left = Math.max(10, (vw - tw) / 2) + 'px';
+        tooltip.style.top  = Math.max(60, (vh - th) / 2) + 'px';
+      } else {
+        // Desktop: anchor near the pin using canvas transform math
+        const cx = (parseFloat(point.style.left) / 100) * BASE_W;
+        const cy = (parseFloat(point.style.top)  / 100) * BASE_H;
+        const s  = getBaseScale() * zoom;
+        const ww = wrapper.clientWidth;
+        const wh = wrapper.clientHeight;
+        const screenX = (cx + panX - BASE_W / 2) * s + ww / 2;
+        const screenY = (cy + panY - BASE_H / 2) * s + wh / 2;
+        const margin  = 14;
+        let left = screenX + margin;
+        let top  = screenY - th / 2;
+        if (left + tw > vw - 10) left = screenX - tw - margin;
+        left = Math.max(10, Math.min(left, vw - tw - 10));
+        top  = Math.max(60, Math.min(top, vh - th - 10));
+        tooltip.style.left = left + 'px';
+        tooltip.style.top  = top  + 'px';
+      }
     });
+  }
+
+  function hideTooltip() {
+    tooltip.classList.remove('visible');
   }
 
   function showTooltip(point) {
@@ -1547,16 +1589,47 @@
   }
 
   function scheduleHide() {
-    hideTimer = setTimeout(() => tooltip.classList.remove('visible'), 300);
+    hideTimer = setTimeout(hideTooltip, 300);
   }
 
-  points.forEach(point => {
-    point.addEventListener('mouseenter', () => showTooltip(point));
-    point.addEventListener('mouseleave', scheduleHide);
-  });
+  if (isTouch) {
+    // Tap pin to open, tap elsewhere or close button to dismiss
+    let activePoint = null;
+    points.forEach(point => {
+      point.addEventListener('click', e => {
+        e.stopPropagation();
+        if (activePoint === point && tooltip.classList.contains('visible')) {
+          hideTooltip();
+          activePoint = null;
+        } else {
+          showTooltip(point);
+          activePoint = point;
+        }
+      });
+    });
 
-  tooltip.addEventListener('mouseenter', () => clearTimeout(hideTimer));
-  tooltip.addEventListener('mouseleave', scheduleHide);
+    // Tap on map closes tooltip
+    wrapper.addEventListener('click', () => { hideTooltip(); activePoint = null; });
+
+    // Stop touch events on tooltip from panning the map or displacing the box
+    tooltip.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+    tooltip.addEventListener('touchmove',  e => e.stopPropagation(), { passive: true });
+
+    // Close button
+    document.getElementById('tt-close').addEventListener('click', e => {
+      e.stopPropagation();
+      hideTooltip();
+      activePoint = null;
+    });
+  } else {
+    points.forEach(point => {
+      point.addEventListener('mouseenter', () => showTooltip(point));
+      point.addEventListener('mouseleave', scheduleHide);
+    });
+    tooltip.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+    tooltip.addEventListener('mouseleave', scheduleHide);
+    document.getElementById('tt-close').style.display = 'none';
+  }
 
   // ---- PAN + ZOOM ----
   const wrapper = document.getElementById('map-wrapper');
