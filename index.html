@@ -1593,34 +1593,9 @@
   }
 
   if (isTouch) {
-    // Tap pin to open, tap elsewhere or close button to dismiss
-    let activePoint = null;
-    points.forEach(point => {
-      point.addEventListener('click', e => {
-        e.stopPropagation();
-        if (activePoint === point && tooltip.classList.contains('visible')) {
-          hideTooltip();
-          activePoint = null;
-        } else {
-          showTooltip(point);
-          activePoint = point;
-        }
-      });
-    });
-
-    // Tap on map closes tooltip
-    wrapper.addEventListener('click', () => { hideTooltip(); activePoint = null; });
-
     // Stop touch events on tooltip from panning the map or displacing the box
     tooltip.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
     tooltip.addEventListener('touchmove',  e => e.stopPropagation(), { passive: true });
-
-    // Close button
-    document.getElementById('tt-close').addEventListener('click', e => {
-      e.stopPropagation();
-      hideTooltip();
-      activePoint = null;
-    });
   } else {
     points.forEach(point => {
       point.addEventListener('mouseenter', () => showTooltip(point));
@@ -1634,6 +1609,29 @@
   // ---- PAN + ZOOM ----
   const wrapper = document.getElementById('map-wrapper');
   const canvas  = document.getElementById('map-canvas');
+
+  // Touch pin/map/close handlers (need wrapper, so placed after its declaration)
+  if (isTouch) {
+    let activePoint = null;
+    points.forEach(point => {
+      point.addEventListener('click', e => {
+        e.stopPropagation();
+        if (activePoint === point && tooltip.classList.contains('visible')) {
+          hideTooltip();
+          activePoint = null;
+        } else {
+          showTooltip(point);
+          activePoint = point;
+        }
+      });
+    });
+    wrapper.addEventListener('click', () => { hideTooltip(); activePoint = null; });
+    document.getElementById('tt-close').addEventListener('click', e => {
+      e.stopPropagation();
+      hideTooltip();
+      activePoint = null;
+    });
+  }
 
   // Fixed canvas dimensions — identical in every browser, every session.
   // Pin positions in HTML are calibrated to this exact size.
