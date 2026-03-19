@@ -835,11 +835,14 @@
     padding: 0;
   }
 
-  /* Touch devices: show close button, centre tooltip, make scrollable */
+  /* Touch devices: show close button, centre tooltip via CSS transform */
   @media (pointer: coarse) {
     .tooltip-close { display: flex; }
     .tooltip {
       position: fixed;
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%);
       max-width: 80vw;
       min-width: 260px;
       max-height: 70vh;
@@ -1003,9 +1006,9 @@
     #filter-bar  { gap: 3px; max-width: 260px; top: 44px; }
     .filter-tag  { font-size: 6px; padding: 2px 6px; }
 
-    /* Tooltip: compact; only tall pins get vertical scroll */
-    .tooltip                    { max-width: 180px; min-width: 150px; overflow: hidden; max-height: none; }
-    .tooltip.tooltip--scrollable { overflow-y: auto; overflow-x: hidden; max-height: 65vh; -webkit-overflow-scrolling: touch; }
+    /* Tooltip: compact, always capped to screen height, scroll only for tall pins */
+    .tooltip                    { max-width: 46vw; min-width: 140px; max-height: 62vh; overflow: hidden; }
+    .tooltip.tooltip--scrollable { overflow-y: auto; overflow-x: hidden; }
     .tooltip-inner    { padding: 8px 10px; }
     .tooltip-city     { font-size: 8px; margin-bottom: 3px; }
     .tooltip-years    { font-size: 7px; margin-bottom: 5px; }
@@ -1557,17 +1560,13 @@
   const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
   function anchorTooltip(point) {
+    if (isTouch) return; // CSS handles centering on touch (left:50%, top:50%, transform)
     requestAnimationFrame(() => {
       const tw = tooltip.offsetWidth;
       const th = tooltip.offsetHeight;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-
-      if (isTouch) {
-        // Centre on screen for touch devices
-        tooltip.style.left = Math.max(10, (vw - tw) / 2) + 'px';
-        tooltip.style.top  = Math.max(60, (vh - th) / 2) + 'px';
-      } else {
+      {
         // Desktop: anchor near the pin using canvas transform math
         const cx = (parseFloat(point.style.left) / 100) * BASE_W;
         const cy = (parseFloat(point.style.top)  / 100) * BASE_H;
