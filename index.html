@@ -1743,9 +1743,15 @@
   applyPhoneLandscapeDefaults();
   window.addEventListener('resize', applyPhoneLandscapeDefaults);
 
-  // Tablet: shift map right ~50px on load so Madrid/Casablanca clear the info panel
+  // Tablet: shift map right ~100px on load so Madrid/Casablanca clear the info panel
   if (isTouch && window.innerWidth >= 768) {
     panX = 100 / getBaseScale();
+    clampPan();
+  }
+
+  // Phone landscape: start with 10% zoom
+  if (isTouch && window.innerWidth < 768) {
+    zoom = 1.1;
     clampPan();
   }
 
