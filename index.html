@@ -1755,9 +1755,10 @@
     clampPan();
   }
 
-  // Phone landscape: start with 10% zoom
+  // Phone landscape: start with 20% zoom, shift map up 15px
   if (isTouch && window.innerWidth < 768) {
-    zoom = 1.1;
+    zoom = 1.2;
+    panY = -15 / getBaseScale();
     clampPan();
   }
 
