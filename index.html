@@ -880,6 +880,7 @@
     transition: background 0.2s, border-color 0.2s;
     line-height: 1;
     user-select: none;
+    touch-action: manipulation; /* prevent iOS double-tap browser zoom */
   }
 
   .zoom-btn:hover {
@@ -1018,6 +1019,21 @@
     .tooltip-tag      { font-size: 7px; padding: 1px 5px; }
     .tooltip-link     { font-size: 8px; padding: 4px 6px; margin-top: 3px; }
     .tooltip-image.has-image { aspect-ratio: 16/9; margin-bottom: 6px; }
+  }
+
+  /* Tablet landscape (touch, min-width 768px) — narrower/taller tooltip, smaller images */
+  @media (pointer: coarse) and (min-width: 768px) and (orientation: landscape) {
+    .tooltip {
+      max-width: 300px;
+      min-width: 220px;
+      max-height: 75vh;
+    }
+    .tooltip-image.has-image {
+      max-height: 120px;
+      aspect-ratio: unset;
+      width: calc(100% + 32px);
+      object-fit: cover;
+    }
   }
 
   /* Collapse toggle bars — hidden by default, shown only in phone landscape */
@@ -1724,6 +1740,12 @@
   }
   applyPhoneLandscapeDefaults();
   window.addEventListener('resize', applyPhoneLandscapeDefaults);
+
+  // Tablet: shift map right ~50px on load so Madrid/Casablanca clear the info panel
+  if (isTouch && window.innerWidth >= 768) {
+    panX = 50 / getBaseScale();
+    clampPan();
+  }
 
   // Apply correct scale on initial paint — immediate call covers most browsers,
   // the rAF pass corrects any edge-case where layout isn't fully settled yet.
