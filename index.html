@@ -1009,9 +1009,14 @@
     #filter-bar  { gap: 3px; max-width: 260px; top: 44px; }
     .filter-tag  { font-size: 6px; padding: 2px 6px; }
 
-    /* Tooltip: compact, scroll only for tall pins; nudge down so header/filter don't clip top */
-    .tooltip                    { max-width: 70vw; min-width: 180px; max-height: 65vh; overflow: hidden; top: 55% !important; }
-    .tooltip.tooltip--scrollable { overflow-y: auto; overflow-x: hidden; }
+    /* Tooltip: compact; scroll on inner container to avoid iOS fixed+transform scroll bug */
+    .tooltip                              { max-width: 70vw; min-width: 180px; overflow: hidden; top: 55% !important; }
+    .tooltip.tooltip--scrollable .tooltip-inner {
+      max-height: 60vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
     .tooltip-inner    { padding: 8px 10px; }
     .tooltip-city     { font-size: 8px; margin-bottom: 3px; }
     .tooltip-years    { font-size: 7px; margin-bottom: 5px; }
