@@ -1101,8 +1101,8 @@
 
   /* Tablet landscape (touch) → show full map, no notice */
 
-  /* Candidate overview shrinks 50px earlier than before to avoid covering pin titles */
-  @media (max-width: 1350px) {
+  /* Candidate overview shrinks + legend repositions together */
+  @media (max-width: 1355px) {
     .info-panel {
       width: 260px;
       padding: 14px 16px;
@@ -1120,8 +1120,8 @@
     .panel-title   { margin-bottom: 10px; }
   }
 
-  /* Legend repositioning only — no resize needed */
-  @media (max-width: 1300px) {
+  /* Legend repositioning at same breakpoint as candidate overview */
+  @media (max-width: 1355px) {
     .legend {
       bottom: 20px;
       right: 18px;
