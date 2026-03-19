@@ -843,6 +843,7 @@
       max-width: 80vw;
       min-width: 260px;
       max-height: 70vh;
+      overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
@@ -1002,8 +1003,9 @@
     #filter-bar  { gap: 3px; max-width: 260px; top: 44px; }
     .filter-tag  { font-size: 6px; padding: 2px 6px; }
 
-    /* Tooltip: compact, scrollable so links are never cut off */
-    .tooltip          { max-width: 180px; min-width: 150px; max-height: 65vh; overflow-y: auto; }
+    /* Tooltip: compact; only tall pins get vertical scroll */
+    .tooltip                    { max-width: 180px; min-width: 150px; overflow: hidden; max-height: none; }
+    .tooltip.tooltip--scrollable { overflow-y: auto; overflow-x: hidden; max-height: 65vh; -webkit-overflow-scrolling: touch; }
     .tooltip-inner    { padding: 8px 10px; }
     .tooltip-city     { font-size: 8px; margin-bottom: 3px; }
     .tooltip-years    { font-size: 7px; margin-bottom: 5px; }
@@ -1502,7 +1504,10 @@
   const points = document.querySelectorAll('.career-point, .milestone');
   let hideTimer = null;
 
+  const scrollablePins = ['madrid', 'marmenor', 'pylos'];
+
   function populateTooltip(point) {
+    tooltip.classList.toggle('tooltip--scrollable', scrollablePins.includes(point.dataset.pinKey));
     document.getElementById('tt-city').textContent = point.dataset.city;
     document.getElementById('tt-years').textContent = '▸ ' + point.dataset.years;
 
