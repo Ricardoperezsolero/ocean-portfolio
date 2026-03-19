@@ -1634,7 +1634,7 @@
   if (isTouch) {
     // Stop touch events on tooltip from panning the map or displacing the box
     tooltip.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
-    tooltip.addEventListener('touchmove',  e => { e.stopPropagation(); e.preventDefault(); }, { passive: false });
+    tooltip.addEventListener('touchmove',  e => { e.stopPropagation(); if (e.touches.length >= 2) e.preventDefault(); }, { passive: false });
   } else {
     points.forEach(point => {
       point.addEventListener('mouseenter', () => showTooltip(point));
