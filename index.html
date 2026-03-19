@@ -1016,7 +1016,7 @@
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
-      padding-bottom: 32px;
+      padding-bottom: 20px;
     }
     .tooltip-inner    { padding: 8px 10px; }
     .tooltip-city     { font-size: 10px; margin-bottom: 3px; }
@@ -1639,6 +1639,7 @@
     const vc = document.getElementById('video-card');
     if (vc) { vc.classList.remove('open'); document.getElementById('video-card-thumb').src = ''; }
     populateTooltip(point);
+    document.querySelector('.tooltip-inner').scrollTop = 0;
     tooltip.classList.add('visible');
     anchorTooltip(point);
   }
