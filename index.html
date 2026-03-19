@@ -1021,8 +1021,8 @@
     .tooltip-image.has-image { aspect-ratio: 16/9; margin-bottom: 6px; }
   }
 
-  /* Tablet landscape (touch, min-width 768px) — narrower tooltip, no scroll, lower position */
-  @media (pointer: coarse) and (min-width: 768px) and (orientation: landscape) {
+  /* Tablet landscape (touch, min-width 768px, min-height 500px) — excludes phones in landscape */
+  @media (pointer: coarse) and (min-width: 768px) and (min-height: 500px) and (orientation: landscape) {
     .tooltip {
       max-width: 300px;
       min-width: 220px;
