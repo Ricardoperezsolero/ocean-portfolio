@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>My Ocean Story · Ricardo Pérez-Solero × Global Fishing Watch</title>
 
 <!-- SEO -->
@@ -850,6 +850,8 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
+    /* Show zoom controls on touch — browser pinch disabled, use buttons */
+    .zoom-controls { display: flex; }
   }
 
   /* ---- ZOOM CONTROLS ---- */
@@ -1006,8 +1008,8 @@
     #filter-bar  { gap: 3px; max-width: 260px; top: 44px; }
     .filter-tag  { font-size: 6px; padding: 2px 6px; }
 
-    /* Tooltip: compact, always capped to screen height, scroll only for tall pins */
-    .tooltip                    { max-width: 46vw; min-width: 140px; max-height: 62vh; overflow: hidden; }
+    /* Tooltip: compact, scroll only for tall pins */
+    .tooltip                    { max-width: 70vw; min-width: 180px; max-height: 65vh; overflow: hidden; }
     .tooltip.tooltip--scrollable { overflow-y: auto; overflow-x: hidden; }
     .tooltip-inner    { padding: 8px 10px; }
     .tooltip-city     { font-size: 8px; margin-bottom: 3px; }
@@ -1042,8 +1044,8 @@
   .info-panel.collapsed .toggle-arrow,
   .legend.collapsed .toggle-arrow { transform: rotate(-90deg); }
 
-  /* Hide zoom controls on touch devices — pinch-to-zoom handles it */
-  @media (pointer: coarse) {
+  /* Hide zoom buttons on phone landscape — pinch handles zoom there */
+  @media (pointer: coarse) and (max-height: 499px) and (orientation: landscape) {
     .zoom-controls { display: none; }
   }
 
@@ -1790,6 +1792,50 @@
     dragging = false;
     wrapper.style.cursor = 'grab';
   });
+
+  // ---- TOUCH PAN + PINCH-TO-ZOOM ----
+  if (isTouch) {
+    let t1StartX, t1StartY, tStartPanX, tStartPanY, tStartZoom, tPinchDist0;
+
+    wrapper.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) {
+        t1StartX   = e.touches[0].clientX;
+        t1StartY   = e.touches[0].clientY;
+        tStartPanX = panX;
+        tStartPanY = panY;
+        tPinchDist0 = null;
+      } else if (e.touches.length === 2) {
+        tPinchDist0 = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        tStartZoom = zoom;
+      }
+    }, { passive: true });
+
+    wrapper.addEventListener('touchmove', e => {
+      e.preventDefault();
+      const bs = getBaseScale();
+      if (e.touches.length === 1 && tPinchDist0 === null) {
+        const dx = (e.touches[0].clientX - t1StartX) / (bs * zoom);
+        const dy = (e.touches[0].clientY - t1StartY) / (bs * zoom);
+        panX = tStartPanX + dx;
+        panY = tStartPanY + dy;
+        applyTransform(false);
+      } else if (e.touches.length === 2 && tPinchDist0 !== null) {
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        zoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, tStartZoom * dist / tPinchDist0));
+        applyTransform(false);
+      }
+    }, { passive: false });
+
+    wrapper.addEventListener('touchend', e => {
+      if (e.touches.length < 2) tPinchDist0 = null;
+    }, { passive: true });
+  }
 
   // ---- STAT COUNTER ----
   function animateNumber(el, target) {
