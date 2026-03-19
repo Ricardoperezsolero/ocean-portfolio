@@ -1025,6 +1025,21 @@
     .tooltip-link     { font-size: 10px; padding: 4px 6px; margin-top: 3px; }
     .legend-title     { display: none; }
     .tooltip-image.has-image { aspect-ratio: 16/9; margin-bottom: 6px; }
+    .tooltip.tooltip--scrollable::after {
+      content: '▾';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 28px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 3px;
+      background: linear-gradient(transparent, rgba(6, 18, 32, 0.95));
+      color: rgba(0, 212, 255, 0.75);
+      font-size: 14px;
+      pointer-events: none;
+      z-index: 5;
+    }
   }
 
   /* Tablet landscape (touch, min-width 768px, min-height 500px) — excludes phones in landscape */
