@@ -1101,7 +1101,8 @@
 
   /* Tablet landscape (touch) → show full map, no notice */
 
-  @media (max-width: 1300px) {
+  /* Candidate overview shrinks 50px earlier than before to avoid covering pin titles */
+  @media (max-width: 1350px) {
     .info-panel {
       width: 260px;
       padding: 14px 16px;
@@ -1117,12 +1118,15 @@
     .stat-row      { margin-bottom: 6px; }
     .panel-label   { margin-bottom: 6px; }
     .panel-title   { margin-bottom: 10px; }
+  }
+
+  /* Legend repositioning only — no resize needed */
+  @media (max-width: 1300px) {
     .legend {
       bottom: 20px;
       right: 18px;
       padding: 11px 14px;
     }
-    .legend-item   { font-size: 9px; gap: 8px; margin-bottom: 5px; }
   }
 
   .scanline {
