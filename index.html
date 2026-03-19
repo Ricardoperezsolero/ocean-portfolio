@@ -1021,12 +1021,14 @@
     .tooltip-image.has-image { aspect-ratio: 16/9; margin-bottom: 6px; }
   }
 
-  /* Tablet landscape (touch, min-width 768px) — narrower/taller tooltip, smaller images */
+  /* Tablet landscape (touch, min-width 768px) — narrower tooltip, no scroll, lower position */
   @media (pointer: coarse) and (min-width: 768px) and (orientation: landscape) {
     .tooltip {
       max-width: 300px;
       min-width: 220px;
-      max-height: 75vh;
+      max-height: 72vh;
+      overflow: hidden !important;   /* no vertical scroll on iPad */
+      top: 58% !important;           /* push down slightly so tall boxes clear filter bar */
     }
     .tooltip-image.has-image {
       max-height: 120px;
@@ -1743,7 +1745,7 @@
 
   // Tablet: shift map right ~50px on load so Madrid/Casablanca clear the info panel
   if (isTouch && window.innerWidth >= 768) {
-    panX = 50 / getBaseScale();
+    panX = 100 / getBaseScale();
     clampPan();
   }
 
