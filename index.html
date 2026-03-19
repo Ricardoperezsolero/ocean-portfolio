@@ -1594,6 +1594,9 @@
 
   function showTooltip(point) {
     clearTimeout(hideTimer);
+    // Close video card if open
+    const vc = document.getElementById('video-card');
+    if (vc) { vc.classList.remove('open'); document.getElementById('video-card-thumb').src = ''; }
     populateTooltip(point);
     tooltip.classList.add('visible');
     anchorTooltip(point);
@@ -1893,6 +1896,8 @@
         if (top + cardH > window.innerHeight - 10) top = window.innerHeight - cardH - 10;
         card.style.left = left + 'px';
         card.style.top  = top  + 'px';
+        // Close pin tooltip if open
+        hideTooltip();
         card.classList.add('open');
       });
     });
