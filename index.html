@@ -1675,16 +1675,8 @@
 
   function clampPan() {
     const totalScale = getBaseScale() * zoom;
-    let maxX, maxY;
-    if (isTouch) {
-      // Touch: allow free pan across the full canvas — only stop at canvas edge
-      maxX = BASE_W / 2;
-      maxY = BASE_H / 2;
-    } else {
-      // Desktop: keep canvas filling the viewport (no black edges)
-      maxX = Math.max(0, BASE_W / 2 - wrapper.clientWidth  / (2 * totalScale));
-      maxY = Math.max(0, BASE_H / 2 - wrapper.clientHeight / (2 * totalScale));
-    }
+    const maxX = Math.max(0, BASE_W / 2 - wrapper.clientWidth  / (2 * totalScale));
+    const maxY = Math.max(0, BASE_H / 2 - wrapper.clientHeight / (2 * totalScale));
     panX = Math.max(-maxX, Math.min(maxX, panX));
     panY = Math.max(-maxY, Math.min(maxY, panY));
   }
