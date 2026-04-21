@@ -1,1 +1,15 @@
+# Claude Code session files
 .claude/
+
+# macOS metadata
+.DS_Store
+
+# Raw source data — too large for git (800MB+)
+*.csv
+
+# Local backup of previous index.html
+index.old.html
+
+# Local dev server scripts (not needed for deployment)
+serve.py
+serve.sh
