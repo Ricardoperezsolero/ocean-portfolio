@@ -512,10 +512,12 @@
     .stat-row         { margin-bottom: 2px; }
     .panel-note       { font-size: 6px; line-height: 1.2; }
 
-    .legend           { padding: 0; overflow: hidden; }
-    .legend-toggle-bar{ display: flex !important; }
-    .legend-body      { padding: 10px 14px; }
+    .legend           { padding: 0; bottom: 8px; right: 8px; max-height: calc(100vh - 120px); display: flex; flex-direction: column; overflow: hidden; }
+    .legend-toggle-bar{ display: flex !important; flex-shrink: 0; font-size: 8px; padding: 8px 12px; }
+    .legend-toggle-bar .toggle-arrow { font-size: 12px; }
+    .legend-body      { padding: 10px 14px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .legend.collapsed .legend-body { display: none; }
+    .legend.collapsed { max-height: none; }
     .legend-title     { display: none; }
 
     .point-city      { font-size: 6px; letter-spacing: 0.06em; }
