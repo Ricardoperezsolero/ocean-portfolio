@@ -388,6 +388,34 @@
     box-shadow: none;
   }
 
+  /* ---- LEGEND INFO BUTTONS & PANELS ---- */
+  .legend-info-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 1px solid rgba(0,212,255,0.4);
+    color: rgba(0,212,255,0.55);
+    font-size: 7.5px; font-style: italic; font-family: Georgia, serif;
+    cursor: pointer; flex-shrink: 0;
+    background: transparent; padding: 0; margin-right: 4px;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .legend-info-btn:hover, .legend-info-btn.active {
+    border-color: var(--glow-cyan); color: var(--glow-cyan);
+    background: rgba(0,212,255,0.08);
+  }
+  .legend-info {
+    display: none;
+    font-size: 8.5px; color: rgba(232,244,248,0.62);
+    line-height: 1.5; padding: 5px 4px 6px 10px;
+    border-left: 1.5px solid rgba(0,212,255,0.25);
+    margin: 2px 0 6px 8px;
+    max-width: 200px; word-wrap: break-word;
+  }
+  .legend-region-note {
+    font-size: 8px; color: rgba(0,212,255,0.4);
+    letter-spacing: 0.05em; margin-bottom: 10px; margin-top: -4px;
+  }
+
   /* ---- VIDEO CARD ---- */
   #video-card {
     display: none; position: fixed; z-index: 2000; width: 240px;
@@ -661,6 +689,7 @@
   </div>
   <div class="legend-body">
     <div class="legend-title">Map Legend</div>
+    <div class="legend-region-note">▸ GFW data shown for career regions only</div>
     <div class="legend-item">
       <div class="legend-dot" style="background:#f0e6d3;box-shadow:0 0 6px #f0e6d3;"></div>Career locations
     </div>
@@ -676,23 +705,32 @@
     <div class="legend-item" style="margin-top:4px;">
       <div style="width:24px;height:8px;border-radius:2px;background:linear-gradient(to right,rgba(10,160,90,0.4),rgba(120,240,180,1));flex-shrink:0;"></div>
       <span style="flex:1;">AIS vessel presence · 24h</span>
+      <button class="legend-info-btn" data-info="ais" title="About this layer">i</button>
       <button class="ais-toggle" id="ais-toggle" title="Toggle AIS layer"></button>
     </div>
+    <div class="legend-info" id="info-ais">GFW uses AIS — a maritime safety broadcast system — to track commercial vessels via satellite and identify apparent fishing activity from speed and direction changes. In the Mediterranean, Southeast Asia and Pacific, AIS gaps often expose illegal or unreported fishing operations, a central theme in my ocean governance reporting.</div>
     <div class="legend-item" style="margin-top:4px;">
       <div style="width:24px;height:8px;border-radius:2px;background:linear-gradient(to right,rgba(200,170,50,0.4),rgba(255,235,150,1));flex-shrink:0;"></div>
       <span style="flex:1;">Vessel encounters · 7d</span>
+      <button class="legend-info-btn" data-info="enc" title="About this layer">i</button>
       <button class="enc-toggle" id="enc-toggle" title="Toggle encounters layer"></button>
     </div>
-    <div id="infra-legend-item" style="display:none;margin-top:6px;position:relative;padding-right:26px;">
-      <div class="legend-item" style="margin-bottom:4px;">
+    <div class="legend-info" id="info-enc">GFW flags an encounter when two vessels meet within 500m for 2+ hours at low speed, away from port. These events may indicate transshipment, crew changes, or catch laundering — activities hard to verify but critical for accountability. My reporting in the South China Sea, Mekong and Mediterranean directly covers these governance blind spots.</div>
+    <div id="infra-legend-item" style="display:none;margin-top:6px;">
+      <div class="legend-item" style="margin-bottom:3px;">
+        <span style="flex:1;">Offshore infrastructure</span>
+        <button class="legend-info-btn" data-info="infra" title="About this layer">i</button>
+        <button class="infra-toggle" id="infra-toggle" title="Toggle infrastructure layer"></button>
+      </div>
+      <div class="legend-info" id="info-infra">Offshore platforms and wind farms detected via Sentinel-1 SAR and Sentinel-2 optical satellites, classified with deep learning (Paolo et al., Nature 2024). Updated monthly. Maps the fixed industrial footprint in my career regions — from North Sea energy to Southeast Asian oil fields — providing spatial context for maritime law and ocean governance coverage.</div>
+      <div class="legend-item" style="margin-bottom:3px;padding-left:4px;">
         <div class="legend-dot" style="background:#f5854e;box-shadow:0 0 5px rgba(245,133,78,0.55);"></div>
         Oil / gas platforms
       </div>
-      <div class="legend-item">
+      <div class="legend-item" style="padding-left:4px;">
         <div class="legend-dot" style="background:#f472b6;box-shadow:0 0 5px rgba(244,114,182,0.55);"></div>
         Offshore wind farms
       </div>
-      <button class="infra-toggle" id="infra-toggle" title="Toggle infrastructure layer" style="position:absolute;right:0;top:50%;transform:translateY(-50%);"></button>
     </div>
   </div>
 </div>
@@ -1334,6 +1372,25 @@ map.on('load', () => {
   });
 
 }); // end map.on('load')
+
+// ---- LEGEND INFO POPOVERS ----
+(function() {
+  const btns = document.querySelectorAll('.legend-info-btn');
+  function closeAll() {
+    document.querySelectorAll('.legend-info').forEach(p => p.style.display = 'none');
+    btns.forEach(b => b.classList.remove('active'));
+  }
+  btns.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const panel = document.getElementById('info-' + this.dataset.info);
+      const isOpen = panel.style.display === 'block';
+      closeAll();
+      if (!isOpen) { panel.style.display = 'block'; this.classList.add('active'); }
+    });
+  });
+  document.addEventListener('click', closeAll);
+})();
 
 // ---- VIDEO CARD ----
 (function() {
