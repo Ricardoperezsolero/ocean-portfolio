@@ -8,7 +8,7 @@ An interactive career and journalism portfolio built on a [Global Fishing Watch]
 
 ## About
 
-Before GFW tracked the ocean, I was reporting on it. This map overlays a decade of field reporting across Southeast Asia, Europe and Latin America onto GFW's live ocean data — showing the geographic overlap between my journalism career and the issues GFW monitors: illegal fishing, vessel encounters, and offshore infrastructure.
+When GFW began tracking the ocean, I was reporting on it. This map overlays a decade of field reporting across Southeast Asia, Europe and Latin America onto GFW's live ocean data — showing the geographic overlap between my journalism career and the issues GFW monitors: illegal fishing, vessel encounters, and offshore infrastructure.
 
 ## Features
 
