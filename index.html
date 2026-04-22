@@ -526,7 +526,7 @@
     .milestone-label { font-size: 6px; line-height: 1.3; }
 
     #map         { top: 40px; }
-    #filter-bar  { gap: 3px; max-width: 260px; top: 60px; }
+    #filter-bar  { gap: 3px; max-width: 340px; top: 60px; }
     .filter-tag  { font-size: 6.6px; padding: 2px 7px; }
     .zoom-controls { display: none; }
 
@@ -915,12 +915,13 @@ const SAT_STYLE = {
 
 const GFW_TOKEN = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtpZEtleSJ9.eyJkYXRhIjp7Im5hbWUiOiJHRlcgUG9ydGZvbGlvIiwidXNlcklkIjo1NzM5MSwiYXBwbGljYXRpb25OYW1lIjoiR0ZXIFBvcnRmb2xpbyIsImlkIjo2NzM4LCJ0eXBlIjoidXNlci1hcHBsaWNhdGlvbiJ9LCJpYXQiOjE3NzY0OTA3MzAsImV4cCI6MjA5MTg1MDczMCwiYXVkIjoiZ2Z3IiwiaXNzIjoiZ2Z3In0.PxCcb6NowItG9E7OTFWQdqpqBUsFnzVyfkDShNWTuN9EBt4QbgkRzDEzWagXmgnwSxBv9XE1mUsdV7OQlmEG05oOyR9yZxUfpCef891I71VUNXWqtNkMkxXB0WULGMovtGW5Mfq982vxEl9eCNimcCfY-boHNuhlxGtrYSWme0y5_PHW6Km_LonVmiuEOBbnThxtXMaHu2VpgIy_j0DFeLkp7K8qTjk4v8ys1a7ZxkCYC0Fbgzgt5LMMfd2bQmkJFoYA1ckmjoPnJBvaxSbtycOF3LeOzx8seevty_ofUqsHXPc1Zuik-leLA3WLH66C7Ie6civqEN0S2ZFxru6vy8aRr1seNRN994-zzvH0ylsuXVvo4Tjl_zY_gxX1nJ8XCqLi8otCoLPdOU7rLsKUvA4IJXPi8mplRLwTcVIaWNz-1uHZqssDrOcjCKzKg_o8x-UzdtTO5N7es_HuW6UNKseIkFvWocmoedwJBwR2S80yu5UUjJ1e95Vqq-XwQulc';
 
+const isMobileLandscape = window.matchMedia('(pointer: coarse) and (max-height: 499px) and (orientation: landscape)').matches;
 const map = new maplibregl.Map({
   container: 'map',
   style: SAT_STYLE,
   center: [38, 15],
-  zoom: 1.9,
-  minZoom: 1.5,
+  zoom: isMobileLandscape ? 1.4 : 1.9,
+  minZoom: isMobileLandscape ? 1.2 : 1.5,
   maxZoom: 8,
   attributionControl: false,
   transformRequest: (url) => {
