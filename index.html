@@ -388,6 +388,15 @@
     box-shadow: none;
   }
 
+  /* ---- TOGGLE ATTRACT ANIMATION ---- */
+  @keyframes toggle-attract {
+    0%, 100% { transform: scale(1);    filter: brightness(1); }
+    50%       { transform: scale(1.45); filter: brightness(2.2); }
+  }
+  .toggle-attract {
+    animation: toggle-attract 0.9s ease-in-out 4;
+  }
+
   /* ---- LEGEND INFO BUTTONS & PANELS ---- */
   .legend-info-btn {
     display: inline-flex; align-items: center; justify-content: center;
@@ -707,7 +716,7 @@
       <div style="width:24px;height:8px;border-radius:2px;background:linear-gradient(to right,rgba(10,160,90,0.4),rgba(120,240,180,1));flex-shrink:0;"></div>
       <span style="flex:1;">AIS vessel presence · 24h</span>
       <button class="legend-info-btn" data-info="ais" title="About this layer">i</button>
-      <button class="ais-toggle" id="ais-toggle" title="Toggle AIS layer"></button>
+      <button class="ais-toggle off" id="ais-toggle" title="Toggle AIS layer"></button>
     </div>
     <div class="legend-info" id="info-ais">GFW uses AIS — a maritime safety broadcast system — to track commercial vessels via satellite and identify apparent fishing activity from speed and direction changes. AIS gaps sometimes expose illegal or unreported fishing operations.</div>
     <div class="legend-item" style="margin-top:4px;">
@@ -1041,6 +1050,7 @@ map.on('load', () => {
     type: 'fill',
     source: 'gfw-ais',
     'source-layer': 'main',
+    layout: { visibility: 'none' },
     paint: {
       'fill-color': [
         'interpolate', ['linear'],
@@ -1080,6 +1090,15 @@ map.on('load', () => {
   map.on('zoom', () => {
     document.getElementById('zoom-label').textContent = map.getZoom().toFixed(1) + 'z';
   });
+
+  // ---- ATTRACT ANIMATION on toggle buttons (fires once, ~4s after load) ----
+  setTimeout(() => {
+    ['ais-toggle', 'enc-toggle'].forEach(id => {
+      const btn = document.getElementById(id);
+      btn.classList.add('toggle-attract');
+      btn.addEventListener('animationend', () => btn.classList.remove('toggle-attract'), { once: true });
+    });
+  }, 1200);
 
   // AIS layer toggle button
   document.getElementById('ais-toggle').addEventListener('click', function() {
@@ -1167,7 +1186,12 @@ map.on('load', () => {
         }
       });
       document.getElementById('infra-legend-item').style.display = 'block';
-      document.getElementById('infra-toggle').addEventListener('click', function() {
+      const infraBtn = document.getElementById('infra-toggle');
+      setTimeout(() => {
+        infraBtn.classList.add('toggle-attract');
+        infraBtn.addEventListener('animationend', () => infraBtn.classList.remove('toggle-attract'), { once: true });
+      }, 400);
+      infraBtn.addEventListener('click', function() {
         this.classList.toggle('off');
         map.setLayoutProperty('infra-layer', 'visibility', this.classList.contains('off') ? 'none' : 'visible');
       });
