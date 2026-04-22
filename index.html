@@ -920,8 +920,8 @@ const map = new maplibregl.Map({
   container: 'map',
   style: SAT_STYLE,
   center: [38, 15],
-  zoom: isMobileLandscape ? 1.4 : 1.9,
-  minZoom: isMobileLandscape ? 1.2 : 1.5,
+  zoom: isMobileLandscape ? 1.0 : 1.9,
+  minZoom: isMobileLandscape ? 1.0 : 1.5,
   maxZoom: 8,
   attributionControl: false,
   transformRequest: (url) => {
