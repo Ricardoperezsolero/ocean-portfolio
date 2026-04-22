@@ -1091,14 +1091,15 @@ map.on('load', () => {
     document.getElementById('zoom-label').textContent = map.getZoom().toFixed(1) + 'z';
   });
 
-  // ---- ATTRACT ANIMATION on toggle buttons (fires once, ~4s after load) ----
+  // ---- ATTRACT ANIMATION on toggle buttons (fires once, all in sync) ----
+  const attractStartAt = performance.now() + 2000;
   setTimeout(() => {
     ['ais-toggle', 'enc-toggle'].forEach(id => {
       const btn = document.getElementById(id);
       btn.classList.add('toggle-attract');
       btn.addEventListener('animationend', () => btn.classList.remove('toggle-attract'), { once: true });
     });
-  }, 1200);
+  }, 2000);
 
   // AIS layer toggle button
   document.getElementById('ais-toggle').addEventListener('click', function() {
@@ -1187,10 +1188,11 @@ map.on('load', () => {
       });
       document.getElementById('infra-legend-item').style.display = 'block';
       const infraBtn = document.getElementById('infra-toggle');
+      const infraAttractDelay = Math.max(0, attractStartAt - performance.now());
       setTimeout(() => {
         infraBtn.classList.add('toggle-attract');
         infraBtn.addEventListener('animationend', () => infraBtn.classList.remove('toggle-attract'), { once: true });
-      }, 400);
+      }, infraAttractDelay);
       infraBtn.addEventListener('click', function() {
         this.classList.toggle('off');
         map.setLayoutProperty('infra-layer', 'visibility', this.classList.contains('off') ? 'none' : 'visible');
