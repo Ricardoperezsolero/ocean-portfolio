@@ -606,25 +606,25 @@
   /* ── Coordinate display (desktop + tablet) ── */
   #coord-display {
     display: none;
-    position: fixed; top: 58px; left: 50%; transform: translateX(-50%);
+    position: fixed; right: 28px; top: 50%; transform: translateY(-50%);
     z-index: 150; pointer-events: none;
-    background: var(--panel-bg);
-    border: 1px solid rgba(0,212,255,0.18);
+    background: rgba(10,14,26,0.55);
+    border: 1px solid rgba(0,212,255,0.1);
     backdrop-filter: blur(12px);
-    padding: 6px 14px 7px;
-    align-items: center; gap: 10px;
+    padding: 6px 12px 7px;
+    align-items: center; gap: 8px;
     animation: slideUp 0.8s ease 0.7s both;
   }
-  .coord-globe { flex-shrink: 0; color: var(--glow-cyan); opacity: 0.75; }
+  .coord-globe { flex-shrink: 0; color: var(--glow-cyan); opacity: 0.4; }
   .coord-text  { display: flex; flex-direction: column; }
   .coord-region {
     font-family: 'Roboto Mono', monospace; font-size: 7px;
-    color: var(--glow-cyan); letter-spacing: 0.14em;
+    color: rgba(0,212,255,0.4); letter-spacing: 0.14em;
     text-transform: uppercase; margin-bottom: 2px;
   }
   .coord-dms {
     font-family: 'Roboto Mono', monospace; font-size: 10px;
-    color: var(--text-primary); letter-spacing: 0.04em; font-weight: 500;
+    color: rgba(232,244,248,0.45); letter-spacing: 0.04em; font-weight: 400;
   }
   /* Show on desktop */
   @media (pointer: fine) {
