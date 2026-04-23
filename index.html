@@ -480,7 +480,7 @@
     animation: toggle-attract 0.9s ease-in-out 4;
   }
 
-  /* ---- LEGEND INFO BUTTONS & PANELS ---- */
+  /* ---- LEGEND INFO BUTTONS ---- */
   .legend-info-btn {
     display: inline-flex; align-items: center; justify-content: center;
     width: 12px; height: 12px; border-radius: 50%;
@@ -495,17 +495,58 @@
     border-color: var(--glow-cyan); color: var(--glow-cyan);
     background: rgba(0,212,255,0.08);
   }
-  .legend-info {
-    display: none;
-    font-size: 8.5px; color: rgba(232,244,248,0.62);
-    line-height: 1.5; padding: 5px 4px 6px 10px;
-    border-left: 1.5px solid rgba(0,212,255,0.25);
-    margin: 2px 0 6px 8px;
-    max-width: 200px; word-wrap: break-word;
+  .legend-info { display: none; } /* content read by modal JS */
+
+  /* ---- INFO MODAL ---- */
+  .info-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(4, 10, 22, 0.72);
+    backdrop-filter: blur(5px);
+    align-items: center; justify-content: center;
   }
-  .legend-region-note {
-    font-size: 8px; color: rgba(0,212,255,0.4);
-    letter-spacing: 0.05em; margin-bottom: 10px; margin-top: -4px;
+  .info-modal-overlay.open { display: flex; }
+  .info-modal {
+    width: min(540px, 88vw);
+    background: rgba(8, 14, 28, 0.97);
+    border: 1px solid rgba(0,212,255,0.22);
+    box-shadow: 0 0 50px rgba(0,212,255,0.08), 0 20px 60px rgba(0,0,0,0.6);
+    backdrop-filter: blur(20px);
+    animation: modalIn 0.18s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+  }
+  .info-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px 13px;
+    border-bottom: 1px solid rgba(0,212,255,0.12);
+  }
+  .info-modal-title {
+    font-family: 'Roboto Mono', monospace; font-size: 10px;
+    color: var(--glow-cyan); letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .info-modal-close {
+    background: none; border: 1px solid rgba(0,212,255,0.28);
+    color: rgba(0,212,255,0.6); width: 22px; height: 22px; border-radius: 50%;
+    cursor: pointer; font-size: 13px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .info-modal-close:hover {
+    border-color: var(--glow-cyan); color: var(--glow-cyan);
+    background: rgba(0,212,255,0.08);
+  }
+  .info-modal-body {
+    padding: 22px 24px 26px;
+    font-size: 13px; color: rgba(232,244,248,0.78);
+    line-height: 1.75; max-height: 60vh; overflow-y: auto;
+  }
+  .info-modal-source {
+    margin-top: 18px; padding-top: 12px;
+    border-top: 1px solid rgba(0,212,255,0.1);
+    font-family: 'Roboto Mono', monospace; font-size: 8.5px;
+    color: rgba(0,212,255,0.35); letter-spacing: 0.06em;
   }
 
   /* ---- VIDEO CARD ---- */
@@ -789,6 +830,20 @@
   <button class="zoom-btn" id="zoom-in"  title="Zoom in">+</button>
   <div class="zoom-level" id="zoom-label">2.0z</div>
   <button class="zoom-btn" id="zoom-out" title="Zoom out">−</button>
+</div>
+
+<!-- INFO MODAL -->
+<div class="info-modal-overlay" id="info-modal-overlay">
+  <div class="info-modal">
+    <div class="info-modal-header">
+      <span class="info-modal-title" id="info-modal-title"></span>
+      <button class="info-modal-close" id="info-modal-close">×</button>
+    </div>
+    <div class="info-modal-body">
+      <p id="info-modal-body"></p>
+      <div class="info-modal-source">Source · Global Fishing Watch</div>
+    </div>
+  </div>
 </div>
 
 <div class="legend" id="legend-panel">
@@ -1499,23 +1554,40 @@ map.on('load', () => {
 
 }); // end map.on('load')
 
-// ---- LEGEND INFO POPOVERS ----
+// ---- LEGEND INFO MODAL ----
 (function() {
-  const btns = document.querySelectorAll('.legend-info-btn');
-  function closeAll() {
-    document.querySelectorAll('.legend-info').forEach(p => p.style.display = 'none');
-    btns.forEach(b => b.classList.remove('active'));
+  const overlay  = document.getElementById('info-modal-overlay');
+  const titleEl  = document.getElementById('info-modal-title');
+  const bodyEl   = document.getElementById('info-modal-body');
+  const closeBtn = document.getElementById('info-modal-close');
+
+  const titles = {
+    ais:   'AIS Vessel Presence · 24h',
+    enc:   'Vessel Encounters · 7d',
+    infra: 'Offshore Infrastructure'
+  };
+
+  function openModal(key) {
+    titleEl.textContent = titles[key] || key;
+    bodyEl.textContent  = document.getElementById('info-' + key).textContent.trim();
+    overlay.classList.add('open');
   }
-  btns.forEach(btn => {
+  function closeModal() {
+    overlay.classList.remove('open');
+    document.querySelectorAll('.legend-info-btn').forEach(b => b.classList.remove('active'));
+  }
+
+  document.querySelectorAll('.legend-info-btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.stopPropagation();
-      const panel = document.getElementById('info-' + this.dataset.info);
-      const isOpen = panel.style.display === 'block';
-      closeAll();
-      if (!isOpen) { panel.style.display = 'block'; this.classList.add('active'); }
+      this.classList.toggle('active');
+      openModal(this.dataset.info);
     });
   });
-  document.addEventListener('click', closeAll);
+
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 })();
 
 // ---- EMAIL COPY ----
