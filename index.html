@@ -643,7 +643,8 @@
   }
   /* Show stack on desktop */
   @media (pointer: fine) {
-    .map-controls-stack { display: flex; }
+    .map-controls-stack            { display: flex; }
+    .map-controls-stack .zoom-controls { display: flex; }
   }
   /* Show stack on tablet landscape (zoom hidden via existing rule) */
   @media (pointer: coarse) and (min-width: 768px) and (min-height: 500px) and (orientation: landscape) {
