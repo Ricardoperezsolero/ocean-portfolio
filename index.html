@@ -607,16 +607,21 @@
   #coord-display {
     display: none;
     position: fixed; right: 28px; top: 50%; transform: translateY(-50%); /* overridden by JS */
-    z-index: 150; pointer-events: none;
+    z-index: 150; pointer-events: auto; cursor: pointer;
     background: rgba(10,14,26,0.55);
     border: 1px solid rgba(0,212,255,0.1);
     backdrop-filter: blur(12px);
-    padding: 6px 12px 7px;
+    padding: 6px 8px;
     align-items: center; gap: 8px;
+    transition: border-color 0.2s, background 0.2s;
     animation: slideUp 0.8s ease 0.7s both;
   }
-  .coord-globe { flex-shrink: 0; color: var(--glow-cyan); opacity: 0.4; }
-  .coord-text  { display: flex; flex-direction: column; }
+  #coord-display:hover { border-color: rgba(0,212,255,0.22); background: rgba(10,14,26,0.7); }
+  .coord-globe { flex-shrink: 0; color: var(--glow-cyan); opacity: 0.4; transition: opacity 0.2s; }
+  #coord-display:hover .coord-globe,
+  #coord-display.expanded .coord-globe { opacity: 0.65; }
+  .coord-text  { display: none; flex-direction: column; padding-left: 4px; }
+  #coord-display.expanded .coord-text { display: flex; }
   .coord-region {
     font-family: 'Roboto Mono', monospace; font-size: 7px;
     color: rgba(0,212,255,0.4); letter-spacing: 0.14em;
@@ -1101,7 +1106,7 @@ const CAREER_ROUTE = [
 ];
 
 // ---- MAP INIT ----
-// ESRI satellite imagery (natural brightness) + geographic label overlay
+// ESRI satellite imagery — labels removed to reduce visual noise
 const SAT_STYLE = {
   version: 8,
   sources: {
@@ -1110,16 +1115,10 @@ const SAT_STYLE = {
       tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
       tileSize: 256,
       attribution: '&copy; Esri, DigitalGlobe, GeoEye, USDA FSA, USGS, and the GIS User Community'
-    },
-    'esri-sat-labels': {
-      type: 'raster',
-      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'],
-      tileSize: 256
     }
   },
   layers: [
-    { id: 'sat',        type: 'raster', source: 'esri-sat' },
-    { id: 'sat-labels', type: 'raster', source: 'esri-sat-labels', paint: { 'raster-opacity': 0.28 } }
+    { id: 'sat', type: 'raster', source: 'esri-sat' }
   ]
 };
 
@@ -1677,6 +1676,13 @@ map.on('load', () => {
   closeBtn.addEventListener('click', closeModal);
   overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+})();
+
+// ---- COORDINATE DISPLAY TOGGLE ----
+(function() {
+  const el = document.getElementById('coord-display');
+  if (!el) return;
+  el.addEventListener('click', () => el.classList.toggle('expanded'));
 })();
 
 // ---- EMAIL COPY ----
