@@ -1336,6 +1336,8 @@ map.on('load', () => {
         !(la > 40 && ln < 0))                        return 'MEDITERRANEAN SEA';
     // Black Sea
     if (la > 40 && la < 48 && ln > 27 && ln < 42)  return 'BLACK SEA';
+    // Caspian Sea
+    if (la > 36 && la < 48 && ln > 49 && ln < 55)  return 'CASPIAN SEA';
     // Red Sea
     if (la > 12 && la < 30 && ln > 32 && ln < 44)  return 'RED SEA';
     // Persian Gulf
