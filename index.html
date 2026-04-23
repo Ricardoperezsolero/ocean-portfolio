@@ -606,7 +606,7 @@
   /* ── Coordinate display (desktop + tablet) ── */
   #coord-display {
     display: none;
-    position: fixed; right: 28px; top: 50%; transform: translateY(-50%);
+    position: fixed; right: 28px; top: 50%; transform: translateY(-50%); /* overridden by JS */
     z-index: 150; pointer-events: none;
     background: rgba(10,14,26,0.55);
     border: 1px solid rgba(0,212,255,0.1);
@@ -1284,6 +1284,21 @@ map.on('load', () => {
   }
   applyPhoneLandscapeDefaults();
   window.addEventListener('resize', applyPhoneLandscapeDefaults);
+
+  // ── Position coordinate display exactly between filter bar and legend ──
+  function positionCoordDisplay() {
+    const coord  = document.getElementById('coord-display');
+    const filter = document.getElementById('filter-bar');
+    const legend = document.getElementById('legend-panel');
+    if (!coord || !filter || !legend) return;
+    const filterBottom = filter.getBoundingClientRect().bottom;
+    const legendTop    = legend.getBoundingClientRect().top;
+    const mid = (filterBottom + legendTop) / 2;
+    coord.style.top       = mid + 'px';
+    coord.style.transform = 'translateY(-50%)';
+  }
+  positionCoordDisplay();
+  window.addEventListener('resize', positionCoordDisplay);
 
   // ── Zoom buttons (touch) ──
   document.getElementById('zoom-in').addEventListener('click', () => map.zoomIn({ duration: 300 }));
