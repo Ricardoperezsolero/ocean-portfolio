@@ -1348,20 +1348,20 @@ map.on('load', () => {
     if (la > 5  && la < 23 && ln > 78 && ln < 100) return 'BAY OF BENGAL';
     // South China Sea
     if (la > 0  && la < 24 && ln > 100 && ln < 122) return 'SOUTH CHINA SEA';
+    // Gulf of Mexico (before Caribbean Sea — overlapping bounding boxes)
+    if (la > 18 && la < 31 && ln > -98 && ln < -80) return 'GULF OF MEXICO';
     // Caribbean Sea
     if (la > 8  && la < 24 && ln > -88 && ln < -58) return 'CARIBBEAN SEA';
-    // Gulf of Mexico
-    if (la > 18 && la < 31 && ln > -98 && ln < -80) return 'GULF OF MEXICO';
     // Coral Sea
     if (la > -25 && la < -10 && ln > 147 && ln < 165) return 'CORAL SEA';
 
     // ── Americas ────────────────────────────────────────────────────────────
     // Alaska
     if (la > 54 && la < 72 && ln > -170 && ln < -130) return 'ALASKA';
-    // Canada & Greenland
-    if (la > 48 && la < 72 && ln > -140 && ln < -50)  return 'NORTH AMERICA';
-    // Greenland (roughly)
+    // Greenland (before North America — overlapping bounding boxes)
     if (la > 60 && la < 84 && ln > -56 && ln < -15)   return 'GREENLAND';
+    // Canada
+    if (la > 48 && la < 72 && ln > -140 && ln < -50)  return 'NORTH AMERICA';
     // Caribbean islands
     if (la > 14 && la < 24 && ln > -85 && ln < -58)   return 'CARIBBEAN';
     // Central America
@@ -1399,10 +1399,10 @@ map.on('load', () => {
     // ── Asia ────────────────────────────────────────────────────────────────
     // South Asia (Indian subcontinent)
     if (la > 5  && la < 38 && ln > 60  && ln < 90)    return 'SOUTH ASIA';
+    // Southeast Asia (before East Asia — overlapping bounding boxes at lat 18–25)
+    if (la > -10 && la < 25 && ln > 92 && ln < 142)   return 'SOUTHEAST ASIA';
     // East Asia (China, Korea, Japan)
     if (la > 18 && la < 55 && ln > 100 && ln < 145)   return 'EAST ASIA';
-    // Southeast Asia (mainland + archipelago)
-    if (la > -10 && la < 25 && ln > 92 && ln < 142)   return 'SOUTHEAST ASIA';
 
     // ── Oceania ─────────────────────────────────────────────────────────────
     if (la > -48 && la < -10 && ln > 110 && ln < 180) return 'AUSTRALIA · OCEANIA';
