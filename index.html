@@ -603,6 +603,39 @@
     border: 1px solid rgba(0,212,255,0.1); border-top: none;
   }
 
+  /* ── Coordinate display (desktop + tablet) ── */
+  #coord-display {
+    display: none;
+    position: fixed; top: 58px; left: 50%; transform: translateX(-50%);
+    z-index: 150; pointer-events: none;
+    background: var(--panel-bg);
+    border: 1px solid rgba(0,212,255,0.18);
+    backdrop-filter: blur(12px);
+    padding: 6px 14px 7px;
+    align-items: center; gap: 10px;
+    animation: slideUp 0.8s ease 0.7s both;
+  }
+  .coord-globe { flex-shrink: 0; color: var(--glow-cyan); opacity: 0.75; }
+  .coord-text  { display: flex; flex-direction: column; }
+  .coord-region {
+    font-family: 'Roboto Mono', monospace; font-size: 7px;
+    color: var(--glow-cyan); letter-spacing: 0.14em;
+    text-transform: uppercase; margin-bottom: 2px;
+  }
+  .coord-dms {
+    font-family: 'Roboto Mono', monospace; font-size: 10px;
+    color: var(--text-primary); letter-spacing: 0.04em; font-weight: 500;
+  }
+  /* Show on desktop */
+  @media (pointer: fine) {
+    #coord-display  { display: flex; }
+    .zoom-controls  { display: flex; }
+  }
+  /* Show coord on tablet landscape, keep zoom hidden */
+  @media (pointer: coarse) and (min-width: 768px) and (min-height: 500px) and (orientation: landscape) {
+    #coord-display { display: flex; }
+  }
+
   /* ── Collapsible toggle bars (hidden on desktop, shown only in phone landscape) ── */
   .panel-toggle-bar,
   .legend-toggle-bar {
@@ -822,6 +855,21 @@
         LinkedIn
       </a>
     </div>
+  </div>
+</div>
+
+<!-- COORDINATE DISPLAY -->
+<div id="coord-display">
+  <svg class="coord-globe" width="26" height="26" viewBox="0 0 26 26" fill="none">
+    <circle cx="13" cy="13" r="11" stroke="currentColor" stroke-width="1.4" opacity="0.8"/>
+    <ellipse cx="13" cy="13" rx="11" ry="3.8" stroke="currentColor" stroke-width="1" opacity="0.55"/>
+    <ellipse cx="13" cy="8.5" rx="9"  ry="2.8" stroke="currentColor" stroke-width="0.7" opacity="0.35"/>
+    <ellipse cx="13" cy="17.5" rx="9" ry="2.8" stroke="currentColor" stroke-width="0.7" opacity="0.35"/>
+    <ellipse cx="13" cy="13" rx="3.8" ry="11" stroke="currentColor" stroke-width="1" opacity="0.55"/>
+  </svg>
+  <div class="coord-text">
+    <div class="coord-region" id="coord-region">GLOBAL</div>
+    <div class="coord-dms"    id="coord-dms">15°00′00.00″N · 38°00′00.00″E</div>
   </div>
 </div>
 
@@ -1243,6 +1291,32 @@ map.on('load', () => {
   map.on('zoom', () => {
     document.getElementById('zoom-label').textContent = map.getZoom().toFixed(1) + 'z';
   });
+
+  // ── Coordinate display ──
+  function toDMS(deg, isLat) {
+    const abs = Math.abs(deg);
+    const d   = Math.floor(abs);
+    const mF  = (abs - d) * 60;
+    const m   = Math.floor(mF);
+    const s   = ((mF - m) * 60).toFixed(2).padStart(5, '0');
+    const dir = isLat ? (deg >= 0 ? 'N' : 'S') : (deg >= 0 ? 'E' : 'W');
+    return `${d}°${String(m).padStart(2,'0')}′${s}″${dir}`;
+  }
+  function getRegionLabel(lng, lat) {
+    if (lat > 25  && lat < 65  && lng > -15 && lng < 42 ) return 'EUROPE · MEDITERRANEAN';
+    if (lat > -15 && lat < 25  && lng > 90  && lng < 145) return 'PACIFIC · SOUTHEAST ASIA';
+    if (lat > -60 && lat < -15 && lng > -85 && lng < -60) return 'PACIFIC · SOUTH AMERICA';
+    if (lat > -40 && lat < 40  && lng > 20  && lng < 100) return 'INDIAN OCEAN';
+    if (lat > -60 && lat < 70  && lng > -80 && lng < 20 ) return 'ATLANTIC OCEAN';
+    return 'GLOBAL OCEAN';
+  }
+  function updateCoords() {
+    const c = map.getCenter();
+    document.getElementById('coord-region').textContent = getRegionLabel(c.lng, c.lat);
+    document.getElementById('coord-dms').textContent    = toDMS(c.lat, true) + ' · ' + toDMS(c.lng, false);
+  }
+  map.on('move', updateCoords);
+  updateCoords();
 
   // ---- ATTRACT ANIMATION on toggle buttons (fires once, all in sync) ----
   const attractStartAt = performance.now() + 2000;
