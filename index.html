@@ -1318,11 +1318,107 @@ map.on('load', () => {
     return `${d}°${String(m).padStart(2,'0')}′${s}″${dir}`;
   }
   function getRegionLabel(lng, lat) {
-    if (lat > 25  && lat < 65  && lng > -15 && lng < 42 ) return 'EUROPE · MEDITERRANEAN';
-    if (lat > -15 && lat < 25  && lng > 90  && lng < 145) return 'PACIFIC · SOUTHEAST ASIA';
-    if (lat > -60 && lat < -15 && lng > -85 && lng < -60) return 'PACIFIC · SOUTH AMERICA';
-    if (lat > -40 && lat < 40  && lng > 20  && lng < 100) return 'INDIAN OCEAN';
-    if (lat > -60 && lat < 70  && lng > -80 && lng < 20 ) return 'ATLANTIC OCEAN';
+    // Normalise longitude to [-180, 180]
+    const ln = ((lng + 180) % 360 + 360) % 360 - 180;
+    const la = lat;
+
+    // ── Poles ──────────────────────────────────────────────────────────────
+    if (la > 66.5)  return 'ARCTIC OCEAN';
+    if (la < -60)   return 'ANTARCTICA';
+
+    // ── Enclosed / semi-enclosed seas (check before open ocean) ────────────
+    // Baltic Sea
+    if (la > 53 && la < 66 && ln > 9  && ln < 31)  return 'BALTIC SEA';
+    // North Sea
+    if (la > 51 && la < 62 && ln > -2 && ln < 9)   return 'NORTH SEA';
+    // Mediterranean Sea (rough polygon)
+    if (la > 30 && la < 47 && ln > -6 && ln < 42 &&
+        !(la > 40 && ln < 0))                        return 'MEDITERRANEAN SEA';
+    // Black Sea
+    if (la > 40 && la < 48 && ln > 27 && ln < 42)  return 'BLACK SEA';
+    // Red Sea
+    if (la > 12 && la < 30 && ln > 32 && ln < 44)  return 'RED SEA';
+    // Persian Gulf
+    if (la > 22 && la < 30 && ln > 47 && ln < 57)  return 'PERSIAN GULF';
+    // Arabian Sea
+    if (la > 5  && la < 25 && ln > 52 && ln < 78)  return 'ARABIAN SEA';
+    // Bay of Bengal
+    if (la > 5  && la < 23 && ln > 78 && ln < 100) return 'BAY OF BENGAL';
+    // South China Sea
+    if (la > 0  && la < 24 && ln > 100 && ln < 122) return 'SOUTH CHINA SEA';
+    // Caribbean Sea
+    if (la > 8  && la < 24 && ln > -88 && ln < -58) return 'CARIBBEAN SEA';
+    // Gulf of Mexico
+    if (la > 18 && la < 31 && ln > -98 && ln < -80) return 'GULF OF MEXICO';
+    // Coral Sea
+    if (la > -25 && la < -10 && ln > 147 && ln < 165) return 'CORAL SEA';
+
+    // ── Americas ────────────────────────────────────────────────────────────
+    // Alaska
+    if (la > 54 && la < 72 && ln > -170 && ln < -130) return 'ALASKA';
+    // Canada & Greenland
+    if (la > 48 && la < 72 && ln > -140 && ln < -50)  return 'NORTH AMERICA';
+    // Greenland (roughly)
+    if (la > 60 && la < 84 && ln > -56 && ln < -15)   return 'GREENLAND';
+    // Caribbean islands
+    if (la > 14 && la < 24 && ln > -85 && ln < -58)   return 'CARIBBEAN';
+    // Central America
+    if (la > 7  && la < 18 && ln > -93 && ln < -75)   return 'CENTRAL AMERICA';
+    // United States (contiguous)
+    if (la > 25 && la < 50 && ln > -125 && ln < -65)  return 'NORTH AMERICA';
+    // Mexico
+    if (la > 14 && la < 33 && ln > -118 && ln < -86)  return 'CENTRAL AMERICA';
+    // South America
+    if (la > -56 && la < 13 && ln > -82 && ln < -34)  return 'SOUTH AMERICA';
+
+    // ── Europe ──────────────────────────────────────────────────────────────
+    // Northern Europe (Scandinavia, Iceland, British Isles, northern mainland)
+    if (la > 48 && la < 72 && ln > -25 && ln < 32)    return 'NORTHERN EUROPE';
+    // Europe (Mediterranean belt — below 48°N)
+    if (la > 35 && la < 50 && ln > -10 && ln < 30)    return 'EUROPE';
+
+    // ── Russia / Siberia ────────────────────────────────────────────────────
+    if (la > 48 && la < 77 && ln > 30  && ln < 180)   return 'RUSSIA · SIBERIA';
+
+    // ── Middle East & Central Asia ──────────────────────────────────────────
+    if (la > 12 && la < 42 && ln > 25  && ln < 63)    return 'MIDDLE EAST';
+    if (la > 36 && la < 56 && ln > 48  && ln < 90)    return 'CENTRAL ASIA';
+
+    // ── Africa ──────────────────────────────────────────────────────────────
+    // North Africa (Maghreb + Sahara)
+    if (la > 15 && la < 38 && ln > -18 && ln < 42)    return 'NORTH AFRICA';
+    // West Africa
+    if (la > -5 && la < 16 && ln > -18 && ln < 15)    return 'WEST AFRICA';
+    // East Africa
+    if (la > -12 && la < 15 && ln > 28 && ln < 52)    return 'EAST AFRICA';
+    // Southern Africa
+    if (la > -36 && la < -5 && ln > 10  && ln < 42)   return 'SOUTHERN AFRICA';
+
+    // ── Asia ────────────────────────────────────────────────────────────────
+    // South Asia (Indian subcontinent)
+    if (la > 5  && la < 38 && ln > 60  && ln < 90)    return 'SOUTH ASIA';
+    // East Asia (China, Korea, Japan)
+    if (la > 18 && la < 55 && ln > 100 && ln < 145)   return 'EAST ASIA';
+    // Southeast Asia (mainland + archipelago)
+    if (la > -10 && la < 25 && ln > 92 && ln < 142)   return 'SOUTHEAST ASIA';
+
+    // ── Oceania ─────────────────────────────────────────────────────────────
+    if (la > -48 && la < -10 && ln > 110 && ln < 180) return 'AUSTRALIA · OCEANIA';
+    if (la > -30 && la < 10  && ln > 160 && ln < 180) return 'PACIFIC · OCEANIA';
+    if (la > -30 && la < 10  && ln > -180 && ln < -140) return 'PACIFIC · OCEANIA';
+
+    // ── Open Oceans ─────────────────────────────────────────────────────────
+    // North Atlantic
+    if (la > 0  && la < 66 && ln > -80 && ln < -10)   return 'NORTH ATLANTIC';
+    // South Atlantic
+    if (la > -60 && la < 0 && ln > -65 && ln < 20)    return 'SOUTH ATLANTIC';
+    // Indian Ocean
+    if (la > -60 && la < 30 && ln > 20 && ln < 110)   return 'INDIAN OCEAN';
+    // North Pacific
+    if (la > 0  && la < 66 && (ln > 130 || ln < -100)) return 'NORTH PACIFIC';
+    // South Pacific
+    if (la > -60 && la < 0 && (ln > 130 || ln < -65)) return 'SOUTH PACIFIC';
+
     return 'GLOBAL OCEAN';
   }
   function updateCoords() {
