@@ -795,7 +795,6 @@
     <div class="notice-icon">↻</div>
     <div class="mobile-title">Rotate your device</div>
     <div class="mobile-sub">My Ocean Story</div>
-    <div class="mobile-sub">Ricardo Perez-Solero × Global Fishing Watch</div>
     <div class="mobile-msg">Best viewed on a desktop, laptop or tablet.</div>
   </div>
 </div>
@@ -805,7 +804,6 @@
   <div class="mobile-inner">
     <div class="notice-icon">↻</div>
     <div class="mobile-title">Rotate your device</div>
-    <div class="mobile-sub">Ricardo Perez-Solero × Global Fishing Watch</div>
     <div class="mobile-msg">This map works best in landscape mode.<br>Turn your device horizontally to explore.</div>
   </div>
 </div>
@@ -815,7 +813,6 @@
   <div class="mobile-inner">
     <div class="notice-icon">⛶</div>
     <div class="mobile-title">My Ocean Story</div>
-    <div class="mobile-sub">Ricardo Perez-Solero × Global Fishing Watch</div>
     <div class="mobile-msg">Best viewed in full screen.<br />Expand your browser window for the full experience.</div>
   </div>
 </div>
@@ -825,7 +822,7 @@
 <header>
   <div class="header-logo">
     <div class="logo-dot"></div>
-    Global Fishing Watch: Candidate Visualization
+    Ricardo Perez-Solero · Ocean Portfolio
   </div>
   <div class="header-title">MY OCEAN STORY · VESSEL ACTIVITY: CAREER TRACK</div>
   <div class="header-tag">LIVE · 2009–2026</div>
@@ -836,11 +833,11 @@
 
 <div class="info-panel" id="info-panel">
   <div class="panel-toggle-bar" id="panel-toggle">
-    <span>Candidate Overview</span>
+    <span>Career Overview</span>
     <span class="toggle-arrow">▾</span>
   </div>
   <div class="panel-body">
-    <div class="panel-label">▸ Candidate Overview</div>
+    <div class="panel-label">▸ Career Overview</div>
     <div class="panel-name">Ricardo Perez-Solero</div>
     <div class="panel-title">COMMUNICATIONS MANAGER · INNOVATION</div>
     <div class="panel-divider"></div>
@@ -855,11 +852,11 @@
       </div>
       <div class="stat">
         <span class="stat-number">1K+</span>
-        <span class="stat-label">GFW stories<br>to tell</span>
+        <span class="stat-label">Published<br>stories</span>
       </div>
     </div>
     <div class="panel-divider"></div>
-    <div class="panel-note">When GFW began tracking the ocean, I was reporting on it. Hover over the points to explore the overlap and open the portfolio links in the blue and red dots.</div>
+    <div class="panel-note">A decade of field reporting across Southeast Asia, Europe and Latin America — mapped onto live ocean data. Hover over the points to explore career stops and portfolio links.</div>
     <div class="panel-divider"></div>
     <div class="panel-contact">
       <button class="email-copy" id="email-copy" title="Copy email address">
@@ -1097,13 +1094,6 @@ const STORY_PINS = [
   }
 ];
 
-const MILESTONE = {
-  key: '2030', lng: 73.0, lat: -5.0,
-  city: 'GFW 2030 Strategy & Goals', years: '2030',
-  desc: 'Global Fishing Watch aims to map all human activity at sea and engage 30 countries to adopt transparency as a principle and share ocean data by 2030. The goal is to fight IUU fishing, protect small-scale fishers and support marine protected areas worldwide.',
-  tags: ['GFW'],
-  links: [['GFW Strategic Plan 2030 (PDF)','https://globalfishingwatch.org/wp-content/uploads/strategic_plan_2030_web.pdf']]
-};
 
 // Career track route (lng, lat pairs)
 const CAREER_ROUTE = [
@@ -1652,45 +1642,12 @@ map.on('load', () => {
       .setLngLat([pin.lng, pin.lat]).addTo(map);
   });
 
-  // Milestone — unified (dot + waves + label in one element, added last so it's on top)
-  const milEl = document.createElement('div');
-  milEl.className = 'milestone-marker';
-  milEl.dataset.pinKey = MILESTONE.key;
-  milEl.dataset.tags = MILESTONE.tags.join('|');
-  milEl.innerHTML = `
-    <div class="milestone-ring">
-      <div class="milestone-wave"></div>
-      <div class="milestone-wave"></div>
-      <div class="milestone-wave"></div>
-      <div class="milestone-core"></div>
-    </div>
-    <div class="milestone-label">
-      <span style="color:var(--glow-cyan);font-size:8px;font-weight:700;display:block;margin-bottom:2px;">GFW 2030</span>
-      Map all human activity · 30 countries<br>Promote transparency
-    </div>`;
-  allMarkerEls.push({ el: milEl, pinKey: MILESTONE.key, tags: MILESTONE.tags });
-  if (isTouch) {
-    milEl.addEventListener('click', e => {
-      e.stopPropagation();
-      if (activeMarkerEl === milEl && tooltip.classList.contains('visible')) {
-        hideTooltip();
-      } else {
-        activeMarkerEl = milEl;
-        showTooltip(MILESTONE, milEl);
-      }
-    });
-  } else {
-    milEl.addEventListener('mouseenter', () => showTooltip(MILESTONE, milEl));
-    milEl.addEventListener('mouseleave', scheduleHide);
-  }
-  new maplibregl.Marker({ element: milEl, anchor: 'center' })
-    .setLngLat([MILESTONE.lng, MILESTONE.lat]).addTo(map);
 
   // Close tooltip on map click
   map.on('click', () => { if (!isTouch) return; hideTooltip(); });
 
   // ---- TAG FILTER ----
-  const allowedTags = ['Portfolio','GFW','Communication','Journalism','Mediterranean','SEA','Migration','Education','Lived here'];
+  const allowedTags = ['Portfolio','Communication','Journalism','Mediterranean','SEA','Migration','Education','Lived here'];
   const filterBar = document.getElementById('filter-bar');
   let activeTag = null;
 
