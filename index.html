@@ -1709,10 +1709,17 @@ map.on('load', () => {
     enc:   'Vessel Encounters · 7d',
     infra: 'Offshore Infrastructure'
   };
+  const sources = {
+    ais:   'Source · Global Fishing Watch API',
+    enc:   'Source · Global Fishing Watch API',
+    infra: 'Source · Global Fishing Watch'
+  };
 
   function openModal(key) {
     titleEl.textContent = titles[key] || key;
     bodyEl.textContent  = document.getElementById('info-' + key).textContent.trim();
+    const srcEl = document.querySelector('.info-modal-source');
+    if (srcEl) srcEl.textContent = sources[key] || 'Source · Global Fishing Watch';
     overlay.classList.add('open');
   }
   function closeModal() {
