@@ -935,7 +935,7 @@
       <button class="legend-info-btn" data-info="ais" title="About this layer">i</button>
       <button class="ais-toggle off" id="ais-toggle" title="Toggle AIS layer"></button>
     </div>
-    <div class="legend-info" id="info-ais">GFW uses AIS — a maritime safety broadcast system — to track commercial vessels via satellite and identify apparent fishing activity from speed and direction changes. AIS gaps sometimes expose illegal or unreported fishing operations.</div>
+    <div class="legend-info" id="info-ais">GFW uses AIS — a maritime safety broadcast system — to track commercial vessels via satellite and identify apparent fishing activity from speed and direction changes. AIS gaps sometimes expose illegal or unreported fishing operations. This layer is filtered to show only areas with sustained vessel traffic — isolated pings and very sparse routes are hidden to keep the map readable. What you see are the busiest corridors, not every individual vessel.</div>
     <div class="legend-item" style="margin-top:4px;">
       <div style="width:24px;height:8px;border-radius:2px;background:linear-gradient(to right,rgba(200,170,50,0.4),rgba(255,235,150,1));flex-shrink:0;"></div>
       <span style="flex:1;">Vessel encounters · 7d</span>
@@ -1259,11 +1259,12 @@ map.on('load', () => {
       'fill-color': [
         'interpolate', ['linear'],
         ['ln', ['+', ['get', 'count'], 1]],
-        0,   'rgba(0,0,0,0)',
-        0.5, 'rgba(10,170,85,0.40)',
-        3,   'rgba(30,210,120,0.62)',
-        7,   'rgba(80,235,155,0.78)',
-        11,  'rgba(180,255,210,0.90)'
+        0,    'rgba(0,0,0,0)',
+        1.09, 'rgba(0,0,0,0)',        /* transparent below ~count 2 */
+        1.39, 'rgba(10,170,85,0.18)', /* count ~3: very faint start  */
+        2.08, 'rgba(30,210,120,0.30)', /* count ~7                    */
+        2.56, 'rgba(80,235,155,0.40)', /* count ~12                   */
+        3.00, 'rgba(180,255,210,0.48)' /* count ~19: max              */
       ],
       'fill-opacity': 1,
       'fill-antialias': false
