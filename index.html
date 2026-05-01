@@ -62,6 +62,10 @@
 }
 </script>
 
+<!-- ── Favicon ── -->
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+
 <!-- ── SEO: Geographic + misc ── -->
 <meta name="theme-color" content="#0a0e1a">
 <meta name="geo.region" content="ES">
@@ -351,6 +355,11 @@
     cursor: pointer; align-items: center; justify-content: center;
     line-height: 1; padding: 0;
   }
+  /* Prevent pinch-zoom on UI elements (map zooms via MapLibre, not browser) */
+  header, #filter-bar, .info-panel, .legend, .tooltip, .info-modal {
+    touch-action: pan-x pan-y;
+  }
+
   @media (pointer: coarse) {
     .tooltip-close { display: flex; }
     .zoom-controls { display: flex; }
@@ -680,9 +689,9 @@
     .header-title { font-size: 6px; white-space: nowrap; }
     .header-tag   { font-size: 6px; padding: 2px 6px; white-space: nowrap; }
 
-    .info-panel       { width: 136px; top: 44px; left: 10px; padding: 0; overflow: hidden; max-height: calc(100vh - 54px); overflow-y: auto; }
-    .panel-toggle-bar { display: flex !important; }
-    .panel-body       { padding: 4px 8px; }
+    .info-panel       { width: 136px; top: 44px; left: 10px; padding: 0; overflow: visible; max-height: none; }
+    .panel-toggle-bar { display: flex !important; position: sticky; top: 0; z-index: 2; background: var(--panel-bg); }
+    .panel-body       { padding: 4px 8px; max-height: calc(100vh - 90px); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
     .info-panel.collapsed .panel-body { display: none; }
     .info-panel.collapsed { width: fit-content; }
     .panel-label      { display: none; }
@@ -693,7 +702,7 @@
     .stat-label       { font-size: 4px; margin-top: 1px; }
     .stat-row         { margin-bottom: 2px; }
     .panel-note       { font-size: 6px; line-height: 1.2; }
-    .panel-contact         { gap: 8px; margin-top: 5px; }
+    .panel-contact         { gap: 8px; margin-top: 5px; padding-bottom: 6px; }
     .panel-contact a,
     .panel-contact .email-copy { font-size: 5.5px; gap: 3px; }
     .panel-contact svg     { width: 7px; height: 7px; }
@@ -1739,6 +1748,20 @@ map.on('load', () => {
   closeBtn.addEventListener('click', closeModal);
   overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+})();
+
+// ---- PREVENT PINCH-ZOOM ON UI BOXES (iOS Safari ignores viewport user-scalable) ----
+(function() {
+  const boxes = document.querySelectorAll('.info-panel, .legend, #filter-bar, header, .info-modal, .tooltip');
+  boxes.forEach(el => {
+    el.addEventListener('touchmove', function(e) {
+      if (e.touches.length > 1) e.preventDefault();
+    }, { passive: false });
+  });
+  // Also block document-level pinch on non-map areas
+  document.addEventListener('touchmove', function(e) {
+    if (e.touches.length > 1 && !e.target.closest('#map')) e.preventDefault();
+  }, { passive: false });
 })();
 
 // ---- COORDINATE DISPLAY TOGGLE ----
