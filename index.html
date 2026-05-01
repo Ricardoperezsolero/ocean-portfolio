@@ -768,8 +768,8 @@
     #notice-rotate { display: flex; }
   }
 
-  /* ── Desktop scaling ── */
-  @media (max-width: 1365px) {
+  /* ── Desktop scaling (pointer:fine = mouse only, not phones/tablets) ── */
+  @media (max-width: 1365px) and (pointer: fine) {
     .info-panel    { width: 260px; padding: 14px 16px; top: 60px; left: 18px; }
     .panel-name    { font-size: 17px; }
     .panel-title   { font-size: 9px; }
@@ -780,7 +780,7 @@
     .stat-row      { margin-bottom: 6px; }
     .panel-label   { margin-bottom: 6px; }
   }
-  @media (max-width: 1365px) {
+  @media (max-width: 1365px) and (pointer: fine) {
     .legend { bottom: 20px; right: 18px; padding: 11px 14px; }
   }
 
