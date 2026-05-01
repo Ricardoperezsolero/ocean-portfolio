@@ -1750,15 +1750,28 @@ map.on('load', () => {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 })();
 
-// ---- PREVENT PINCH-ZOOM ON UI BOXES (iOS Safari ignores viewport user-scalable) ----
+// ---- PREVENT ZOOM ON UI ELEMENTS (trackpad pinch + Cmd+/-/0 on desktop; touch pinch on mobile) ----
 (function() {
+  // Desktop Mac: trackpad pinch sends wheel+ctrlKey. MapLibre already calls preventDefault()
+  // on its own canvas, so we only need to block it when the cursor is outside the map.
+  document.addEventListener('wheel', function(e) {
+    if (e.ctrlKey && !e.target.closest('#map')) e.preventDefault();
+  }, { passive: false });
+
+  // Block Cmd+Plus / Cmd+Minus / Cmd+0 browser zoom shortcuts
+  document.addEventListener('keydown', function(e) {
+    if (e.metaKey && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
+      e.preventDefault();
+    }
+  });
+
+  // Mobile / iOS Safari: touchmove pinch on non-map elements
   const boxes = document.querySelectorAll('.info-panel, .legend, #filter-bar, header, .info-modal, .tooltip');
   boxes.forEach(el => {
     el.addEventListener('touchmove', function(e) {
       if (e.touches.length > 1) e.preventDefault();
     }, { passive: false });
   });
-  // Also block document-level pinch on non-map areas
   document.addEventListener('touchmove', function(e) {
     if (e.touches.length > 1 && !e.target.closest('#map')) e.preventDefault();
   }, { passive: false });
