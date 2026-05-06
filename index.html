@@ -695,21 +695,21 @@
                         -webkit-overflow-scrolling: touch; }
     .panel-toggle-bar { display: flex !important; position: sticky; top: 0;
                         z-index: 2; background: var(--panel-bg); }
-    .panel-body       { padding: 6px 12px; }
+    .panel-body       { padding: 4px 10px; }
     .info-panel.collapsed .panel-body { display: none; }
     .info-panel.collapsed { max-height: none; width: fit-content; overflow: hidden; }
     .panel-label      { display: none; }
-    .panel-note       { font-size: 10px; line-height: 1.5; font-style: italic; }
-    .panel-name       { font-size: 13px; margin-bottom: 3px; margin-top: 6px; }
-    .panel-title      { font-size: 8px; letter-spacing: 0.06em; margin-bottom: 6px; }
-    .panel-divider    { margin: 5px 0; }
-    .stat-number      { font-size: 14px; }
-    .stat-label       { font-size: 7px; margin-top: 2px; }
-    .stat-row         { margin-bottom: 4px; }
-    .panel-contact         { gap: 12px; margin-top: 6px; padding-bottom: 8px; }
+    .panel-note       { font-size: 9px; line-height: 1.4; font-style: italic; }
+    .panel-name       { font-size: 11px; margin-bottom: 2px; margin-top: 4px; }
+    .panel-title      { font-size: 7px; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .panel-divider    { margin: 3px 0; }
+    .stat-number      { font-size: 12px; }
+    .stat-label       { font-size: 6px; margin-top: 1px; }
+    .stat-row         { margin-bottom: 3px; }
+    .panel-contact         { gap: 10px; margin-top: 4px; padding-bottom: 6px; }
     .panel-contact a,
-    .panel-contact .email-copy { font-size: 9px; gap: 4px; }
-    .panel-contact svg     { width: 10px; height: 10px; }
+    .panel-contact .email-copy { font-size: 8px; gap: 4px; }
+    .panel-contact svg     { width: 9px; height: 9px; }
 
     .legend           { padding: 0; bottom: 8px; right: 8px; max-height: calc(100vh - 120px); display: flex; flex-direction: column; overflow: hidden; }
     .legend-toggle-bar{ display: flex !important; flex-shrink: 0; font-size: 8px; padding: 8px 12px; }
@@ -1573,10 +1573,10 @@ map.on('load', () => {
 
   // ===== PASS 1: LABELS (added first = lower in DOM stack) =====
 
-  // Career pin labels
+  // Career pin labels — clicking/hovering also triggers the tooltip
   CAREER_PINS.forEach(pin => {
     const el = document.createElement('div');
-    el.style.cssText = "position:relative;width:0;height:0;overflow:visible;";
+    el.style.cssText = "position:relative;width:0;height:0;overflow:visible;cursor:pointer;";
     el.dataset.tags = pin.tags.join('|');
     const cityColor = pin.story ? 'color:var(--glow-cyan);font-size:8px;' : '';
     el.innerHTML = `
@@ -1585,20 +1585,33 @@ map.on('load', () => {
         <span class="point-role">${pin.years}</span>
       </div>`;
     allMarkerEls.push({ el, pinKey: pin.key, tags: pin.tags });
+    if (isTouch) {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        if (activeMarkerEl === el && tooltip.classList.contains('visible')) {
+          hideTooltip();
+        } else {
+          activeMarkerEl = el;
+          showTooltip(pin, el);
+        }
+      });
+    } else {
+      el.addEventListener('mouseenter', () => showTooltip(pin, el));
+      el.addEventListener('mouseleave', scheduleHide);
+    }
     new maplibregl.Marker({ element: el, anchor: 'center' })
       .setLngLat([pin.lng, pin.lat]).addTo(map);
   });
 
-  // Story pin labels
+  // Story pin labels — clicking the label itself opens the video card
   STORY_PINS.forEach(pin => {
     const el = document.createElement('div');
     el.style.cssText = "position:relative;width:0;height:0;overflow:visible;";
     el.dataset.tags = pin.tags.join('|');
     const labelClass = pin.labelSide === 'left' ? 'story-label left' : 'story-label';
     el.innerHTML = `
-      <div class="${labelClass}">
+      <div class="${labelClass}" data-embed="${pin.embed}" style="cursor:pointer;" title="Watch story">
         ${pin.label}
-        <button class="story-link-icon" data-embed="${pin.embed}" title="Watch story">&#9654;</button>
       </div>`;
     allMarkerEls.push({ el, pinKey: pin.key, tags: pin.tags });
     new maplibregl.Marker({ element: el, anchor: 'center' })
@@ -1810,7 +1823,7 @@ map.on('load', () => {
   const closeBtn = document.getElementById('video-card-close');
 
   document.addEventListener('click', function(e) {
-    const btn = e.target.closest('.story-link-icon');
+    const btn = e.target.closest('.story-link-icon, .story-label[data-embed]');
     if (!btn) return;
     e.preventDefault(); e.stopPropagation();
     const embedUrl = btn.dataset.embed;
@@ -1832,7 +1845,7 @@ map.on('load', () => {
   closeBtn.addEventListener('click', closeCard);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCard(); });
   document.addEventListener('click', e => {
-    if (card.classList.contains('open') && !card.contains(e.target) && !e.target.closest('.story-link-icon'))
+    if (card.classList.contains('open') && !card.contains(e.target) && !e.target.closest('.story-link-icon, .story-label[data-embed]'))
       closeCard();
   });
 })();
