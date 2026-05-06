@@ -1573,10 +1573,10 @@ map.on('load', () => {
 
   // ===== PASS 1: LABELS (added first = lower in DOM stack) =====
 
-  // Career pin labels — clicking/hovering also triggers the tooltip
+  // Career pin labels — clicking/hovering the label text also triggers the tooltip
   CAREER_PINS.forEach(pin => {
     const el = document.createElement('div');
-    el.style.cssText = "position:relative;width:0;height:0;overflow:visible;cursor:pointer;";
+    el.style.cssText = "position:relative;width:0;height:0;overflow:visible;";
     el.dataset.tags = pin.tags.join('|');
     const cityColor = pin.story ? 'color:var(--glow-cyan);font-size:8px;' : '';
     el.innerHTML = `
@@ -1584,9 +1584,11 @@ map.on('load', () => {
         <span class="point-city" style="${cityColor}">${pin.city.split(',')[0]}</span>
         <span class="point-role">${pin.years}</span>
       </div>`;
-    allMarkerEls.push({ el, pinKey: pin.key, tags: pin.tags });
+    // Attach to the actual visible element, not the 0×0 wrapper
+    const labelDiv = el.querySelector('.point-label');
+    labelDiv.style.cursor = 'pointer';
     if (isTouch) {
-      el.addEventListener('click', e => {
+      labelDiv.addEventListener('click', e => {
         e.stopPropagation();
         if (activeMarkerEl === el && tooltip.classList.contains('visible')) {
           hideTooltip();
@@ -1596,9 +1598,10 @@ map.on('load', () => {
         }
       });
     } else {
-      el.addEventListener('mouseenter', () => showTooltip(pin, el));
-      el.addEventListener('mouseleave', scheduleHide);
+      labelDiv.addEventListener('mouseenter', () => showTooltip(pin, el));
+      labelDiv.addEventListener('mouseleave', scheduleHide);
     }
+    allMarkerEls.push({ el, pinKey: pin.key, tags: pin.tags });
     new maplibregl.Marker({ element: el, anchor: 'center' })
       .setLngLat([pin.lng, pin.lat]).addTo(map);
   });
