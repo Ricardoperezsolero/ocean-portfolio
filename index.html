@@ -215,7 +215,8 @@
   }
   .point-label {
     position: absolute; left: 22px; top: 50%;
-    transform: translateY(-50%); white-space: nowrap; pointer-events: none;
+    transform: translateY(-50%); white-space: nowrap;
+    pointer-events: auto; cursor: pointer;
   }
   .point-label.left { left: auto; right: 22px; text-align: right; }
   .point-city {
@@ -1586,7 +1587,7 @@ map.on('load', () => {
       </div>`;
     // Attach to the actual visible element, not the 0×0 wrapper
     const labelDiv = el.querySelector('.point-label');
-    labelDiv.style.cursor = 'pointer';
+    labelDiv.addEventListener('mousedown', e => e.stopPropagation());
     if (isTouch) {
       labelDiv.addEventListener('click', e => {
         e.stopPropagation();
