@@ -5,7 +5,7 @@ GFW Fixed Infrastructure CSV → infrastructure.geojson
 Source dataset : public-fixed-infrastructure:v1.1 (SAR variant)
 Dataset URL    : https://globalfishingwatch.org/data-download/datasets/public-fixed-infrastructure:v1.1
 License        : CC BY-NC 4.0 — Global Fishing Watch
-Used in        : https://gfw.ricardoperezsolero.com/
+Used in        : https://ocean.ricardoperezsolero.com/
 
 OUTPUT FILTERS APPLIED
 ----------------------

@@ -1,8 +1,8 @@
-# GFW Portfolio Map
+# Ocean Portfolio Map
 
 An interactive career and journalism portfolio built on a [Global Fishing Watch](https://globalfishingwatch.org/) ocean map.
 
-**Live:** [gfw.ricardoperezsolero.com](https://gfw.ricardoperezsolero.com)
+**Live:** [ocean.ricardoperezsolero.com](https://ocean.ricardoperezsolero.com)
 
 ---
 
